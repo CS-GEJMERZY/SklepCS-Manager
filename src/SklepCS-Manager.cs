@@ -25,10 +25,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     public void OnConfigParsed(PluginConfig config)
     {
         Config = config;
-        if (Config.PermissionGroups.Count == 0)
-        {
-            Config.PermissionGroups.Add(new SklepcsPermission());
-        }
 
         DatabaseManager = new SklepcsDatabaseManager(Config.Settings.Database);
         PermissionManager = new SklepcsPermissionManager(Config.PermissionGroups);

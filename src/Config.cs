@@ -13,6 +13,14 @@ public class PluginConfig : BasePluginConfig
 
     [JsonPropertyName("Groups")]
     public List<SklepcsPermission> PermissionGroups { get; set; } = new List<SklepcsPermission>();
+
+    public PluginConfig()
+    {
+        if (PermissionGroups.Count == 0)
+        {
+            PermissionGroups.Add(new SklepcsPermission());
+        }
+    }
 }
 
 
