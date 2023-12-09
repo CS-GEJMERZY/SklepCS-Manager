@@ -1,10 +1,11 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using System.Data;
+using CounterStrikeSharp.API.Core;
 using MySqlConnector;
 
 public class SklepcsDatabaseManager
 {
     internal string ConnectionsString = string.Empty;
-    internal MySqlConnection Conneciton;
+    internal MySqlConnection Connection;
 
     public SklepcsDatabaseManager(DatabaseData databaseConfig)
     {
@@ -21,8 +22,7 @@ public class SklepcsDatabaseManager
 
         try
         {
-            Conneciton = new MySqlConnection(ConnectionsString);
-            Conneciton.Open();
+            Connection = new MySqlConnection(ConnectionsString);
         }
         catch (Exception ex)
         {
@@ -32,46 +32,58 @@ public class SklepcsDatabaseManager
 
     public List<PlayerConnectionData> FetchPlayerData(CCSPlayerController player, string serverTag)
     {
-        if (Conneciton == null)
+        if (Connection == null)
         {
             throw new Exception("Database is null, but tried to query player data.");
         }
 
-
-        List<PlayerConnectionData> PlayerDataList = new List<PlayerConnectionData>();
+        List<PlayerConnectionData> playerDataList = new List<PlayerConnectionData>();
 
         if (player.AuthorizedSteamID == null)
         {
-            return PlayerDataList;
+            return playerDataList;
         }
 
-
-        string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{player.AuthorizedSteamID.SteamId2}' and serwer = '{serverTag}'";
-
-        try
+        using (var command = new MySqlCommand())
         {
-            using var command = new MySqlCommand(query, this.Conneciton);
-            using var reader = command.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
-                PlayerConnectionData playerData = new PlayerConnectionData
+                Connection.Open();
+
+                string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{player.AuthorizedSteamID.SteamId2}' AND serwer = '{serverTag}'";
+
+                command.CommandText = query;
+                command.Connection = Connection;
+
+                using (var reader = command.ExecuteReader())
                 {
-                    AuthType = reader.GetString("authtype"),
-                    Flags = reader.GetString("flags"),
-                    Immunity = reader.GetInt32("immunity"),
-                    End = reader.GetDateTime("koniec")
-                };
+                    while (reader.Read())
+                    {
+                        PlayerConnectionData playerData = new PlayerConnectionData
+                        {
+                            AuthType = reader.GetString("authtype"),
+                            Flags = reader.GetString("flags"),
+                            Immunity = reader.GetInt32("immunity"),
+                            End = reader.GetDateTime("koniec")
+                        };
 
-                PlayerDataList.Add(playerData);
-
+                        playerDataList.Add(playerData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Encountered error while reading player data from the database: {ex.Message}");
+            }
+            finally
+            {
+                if (Connection.State == ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
             }
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Encountered error while reading player data from database: {ex.Message}");
-        }
 
-        return PlayerDataList;
+        return playerDataList;
     }
 }
