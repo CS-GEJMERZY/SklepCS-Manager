@@ -43,9 +43,8 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 if (player != null && player.IsValid && !player.IsBot)
                 {
                     PlayerCache.Add(player, new Player());
-
-                    PlayerCache[player].LoadDatabaseData(player, DatabaseManager, Config.Settings.ServerTag);
-                    PlayerCache[player].LoadPermissions(player, PermissionManager);
+                    PlayerCache[player].LoadDatabaseData(player, DatabaseManager!, Config.Settings.ServerTag);
+                    PlayerCache[player].LoadPermissions(player, PermissionManager!);
                 }
             }
         }
@@ -80,7 +79,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             commandInfo.ReplyToCommand($"{data.RequiredFlags} | {perms}");
         }
 
-        var fetchedPermissions = PermissionManager.FetchPermissions(PlayerCache[player].ConnectionData);
+        var fetchedPermissions = PermissionManager!.FetchPermissions(PlayerCache[player].ConnectionData);
 
         commandInfo.ReplyToCommand("Listing permissions that should be added: ");
         foreach (var permission in fetchedPermissions)

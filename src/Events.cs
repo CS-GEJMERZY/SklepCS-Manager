@@ -18,8 +18,8 @@ public partial class SklepcsManagerPlugin
         }
 
         if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Player()); }
-        PlayerCache[player].LoadDatabaseData(player, DatabaseManager, Config.Settings.ServerTag);
-        PlayerCache[player].LoadPermissions(player, PermissionManager);
+        PlayerCache[player].LoadDatabaseData(player, DatabaseManager!, Config.Settings.ServerTag);
+        PlayerCache[player].LoadPermissions(player, PermissionManager!);
 
         return HookResult.Continue;
     }
