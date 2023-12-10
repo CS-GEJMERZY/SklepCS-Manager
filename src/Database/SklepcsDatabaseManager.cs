@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using CounterStrikeSharp.API.Core;
 using MySqlConnector;
 
 public class SklepcsDatabaseManager
