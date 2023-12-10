@@ -44,7 +44,7 @@ public class SklepcsDatabaseManager
             {
                 await Connection.OpenAsync();
 
-                string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{SteamId2}' AND serwer = '{serverTag}'";
+                string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{SteamId2}' AND (serwer = '{serverTag}' or serwer='all')";
 
                 command.CommandText = query;
                 command.Connection = Connection;
