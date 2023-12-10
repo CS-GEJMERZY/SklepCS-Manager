@@ -8,13 +8,19 @@ public class Player
 
     private bool _loadedDatabaseData = false;
 
-    public bool IsValid => _loadedDatabaseData;
+    public bool IsLoadedDatabase => _loadedDatabaseData;
 
     public Player()
     {
         ConnectionData = new List<PlayerConnectionData>();
         AddedPermissions = new List<string>();
     }
+
+    public static bool IsValid(CCSPlayerController? player)
+    {
+        return player != null && player.IsValid && !player.IsBot && !player.IsHLTV;
+    }
+
 
     public async Task LoadDatabaseData(string SteamID2, string serverTag, SklepcsDatabaseManager databaseManager)
     {

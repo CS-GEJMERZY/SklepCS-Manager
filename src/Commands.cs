@@ -8,13 +8,17 @@ namespace SklepCSManager;
 
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
-    [ConsoleCommand("css_shop", "Sklep serwera")]
-    [ConsoleCommand("css_sklep", "Sklep serwera")]
+    [ConsoleCommand("css_uslugi", "Shows players active services")]
+    [ConsoleCommand("css_ile", "hows players active services")]
     public void OnShopCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null) { return; }
+        if(!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Nie znaleziono twoich danych w bazie danych, spróbuj ponownie za chwilę.");
+            return;
+        }
 
-        commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Blue}Usługi zakupisz w naszym sklepie WWW: {ChatColors.LightPurple}{Config.Sklepcs.WebsiteURL}");
+        //commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Blue}Usługi zakupisz w naszym sklepie WWW: {ChatColors.LightPurple}{Config.Sklepcs.WebsiteURL}");
 
         if (PlayerCache[player].ConnectionData.Count > 0)
         {
