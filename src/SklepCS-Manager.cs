@@ -40,11 +40,19 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         {
             foreach (var player in Utilities.GetPlayers())
             {
-                if (player != null && player.IsValid && !player.IsBot)
+                if (player != null && player.IsValid && !player.IsBot && player.AuthorizedSteamID != null)
                 {
                     PlayerCache.Add(player, new Player());
-                    PlayerCache[player].LoadDatabaseData(player, DatabaseManager!, Config.Settings.ServerTag);
-                    PlayerCache[player].LoadPermissions(player, PermissionManager!);
+                    var steamId2 = player.AuthorizedSteamID.SteamId2;
+                    Task.Run(async () =>
+                    {
+                        await PlayerCache[player].LoadDatabaseData(steamId2, Config.Settings.ServerTag, DatabaseManager!);
+
+                        Server.NextFrame(() =>
+                        {
+                            PlayerCache[player].LoadPermissions(player, PermissionManager!);
+                        });
+                    });
                 }
             }
         }

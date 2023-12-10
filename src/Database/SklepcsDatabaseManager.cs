@@ -30,7 +30,7 @@ public class SklepcsDatabaseManager
         }
     }
 
-    public List<PlayerConnectionData> FetchPlayerData(CCSPlayerController player, string serverTag)
+    public async Task<List<PlayerConnectionData>> FetchPlayerData(string SteamId2, string serverTag)
     {
         if (Connection == null)
         {
@@ -39,18 +39,13 @@ public class SklepcsDatabaseManager
 
         List<PlayerConnectionData> playerDataList = new List<PlayerConnectionData>();
 
-        if (player.AuthorizedSteamID == null)
-        {
-            return playerDataList;
-        }
-
         using (var command = new MySqlCommand())
         {
             try
             {
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{player.AuthorizedSteamID.SteamId2}' AND serwer = '{serverTag}'";
+                string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{SteamId2}' AND serwer = '{serverTag}'";
 
                 command.CommandText = query;
                 command.Connection = Connection;
@@ -79,7 +74,7 @@ public class SklepcsDatabaseManager
             {
                 if (Connection.State == ConnectionState.Open)
                 {
-                    Connection.Close();
+                    await Connection.CloseAsync();
                 }
             }
         }

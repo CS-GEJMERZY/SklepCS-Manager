@@ -16,14 +16,9 @@ public class Player
         AddedPermissions = new List<string>();
     }
 
-    public void LoadDatabaseData(CCSPlayerController player, SklepcsDatabaseManager databaseManager, string serverTag)
+    public async Task LoadDatabaseData(string SteamID2, string serverTag, SklepcsDatabaseManager databaseManager)
     {
-        if (player == null)
-        {
-            return;
-        }
-
-        ConnectionData = databaseManager.FetchPlayerData(player, serverTag);
+        ConnectionData = await databaseManager.FetchPlayerData(SteamID2, serverTag);
         _loadedDatabaseData = true;
     }
 

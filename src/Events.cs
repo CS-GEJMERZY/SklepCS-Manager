@@ -18,8 +18,16 @@ public partial class SklepcsManagerPlugin
         }
 
         if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Player()); }
-        PlayerCache[player].LoadDatabaseData(player, DatabaseManager!, Config.Settings.ServerTag);
-        PlayerCache[player].LoadPermissions(player, PermissionManager!);
+        var steamId2 = player.AuthorizedSteamID.SteamId2;
+        Task.Run(async () =>
+        {
+            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Settings.ServerTag, DatabaseManager!);
+
+            Server.NextFrame(() =>
+            {
+                PlayerCache[player].LoadPermissions(player, PermissionManager!);
+            });
+        });
 
         return HookResult.Continue;
     }
