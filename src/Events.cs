@@ -21,7 +21,7 @@ public partial class SklepcsManagerPlugin
         var steamId2 = player.AuthorizedSteamID.SteamId2;
         Task.Run(async () =>
         {
-            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Settings.ServerTag, DatabaseManager!);
+            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
 
             Server.NextFrame(() =>
             {

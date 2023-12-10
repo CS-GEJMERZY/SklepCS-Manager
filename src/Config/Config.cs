@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Core;
 
-namespace SklepCSManager;
+namespace Config;
 
 public class PluginConfig : BasePluginConfig
 {

@@ -1,4 +1,4 @@
-﻿namespace SklepCSManager;
+﻿namespace Models;
 public class ServiceSmsData
 {
     public string Name { get; set; } = "Super VIP";

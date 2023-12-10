@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Config;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -46,7 +47,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
                     Task.Run(async () =>
                     {
-                        await PlayerCache[player].LoadDatabaseData(steamId2, Config.Settings.ServerTag, DatabaseManager!);
+                        await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
 
                         Server.NextFrame(() =>
                         {
