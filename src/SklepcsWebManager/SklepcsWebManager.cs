@@ -48,10 +48,6 @@ namespace SklepCSManager
                 }
                 else
                 {
-                    Server.NextFrame(() =>
-                    {
-                        Server.PrintToChatAll($"Error: {response.StatusCode} - {response.ReasonPhrase}");
-                    });
                     return new List<string>();
                 }
             }
@@ -85,10 +81,7 @@ namespace SklepCSManager
             }
             catch (Exception ex)
             {
-                Server.NextFrame(() =>
-                {
-                    Server.PrintToChatAll($"Error services: {ex.Message}");
-                });
+                
                 return false;
             }
         }
@@ -107,10 +100,6 @@ namespace SklepCSManager
             }
             catch (Exception ex)
             {
-                Server.NextFrame(() =>
-                {
-                    Server.PrintToChatAll($"Error settings: {ex.Message}");
-                });
                 return false;
             }
         }
@@ -133,9 +122,9 @@ namespace SklepCSManager
             }
         }
 
-        public async Task<bool> RegisterServiceBuy(ulong steamId64, string planShortId, string playerIP, string playerName)
+        public async Task<bool> RegisterServiceBuy(ulong steamId64, string planShortId, string SmsCode, string playerIP, string playerName)
         {
-            string apiUrl = $"{ApiUrl}api_server.php?api={ApiKey}&steam64={steamId64}&tekst={planShortId}&ip={playerIP}&serwer={_serverID}&ver={ApiVersion}&client={5}&name={playerName}";
+            string apiUrl = $"{ApiUrl}api_server.php?api={ApiKey}&steam64={steamId64}&tekst={planShortId + '-' + SmsCode}&ip={playerIP}&serwer={_serverID}&ver={ApiVersion}&client={5}&name={playerName}";
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -150,17 +139,34 @@ namespace SklepCSManager
                     }
                     else
                     {
-                        // TO:DO log error to plugin log
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    // TO:DO log error to plugin log
-                    throw;
                     return false;
                 }
             }
+        }
+
+        public ServiceSmsData? GetService(int planID)
+        {
+            if (planID < 0 || planID > Services.Count)
+            {
+                return null;
+            }
+
+            return Services[planID - 1];
+        }
+
+        public async Task<bool> AddPlayerFlags()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> AddPlayerMoney()
+        {
+            throw new NotImplementedException();
         }
 
         private List<string> BreakQuery(string query)
