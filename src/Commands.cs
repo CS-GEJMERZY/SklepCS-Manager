@@ -3,77 +3,142 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API
+using CounterStrikeSharp.API;
 
 namespace SklepCSManager;
 
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
-    [ConsoleCommand("css_uslugi", "Shows players active services")]
+    [ConsoleCommand("css_uslugi", "Show players active services")]
     public void OnServicesCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
+        if (!Player.IsValid(player))
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Nie znaleziono twoich danych w bazie danych, spróbuj ponownie za chwilę.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.invalid"]}");
             return;
+        }
+            
+        if(!PlayerCache.ContainsKey(player!))
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.no_data"]}");
         }
 
         if (PlayerCache[player!].ConnectionData.Count > 0)
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Blue}Twoje aktywne usługi:");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.your_services"]}");
             for (int i = 0; i < PlayerCache[player!].ConnectionData.Count; i++)
             {
                 DateTime dateTime = PlayerCache[player!].ConnectionData[i].End;
-                commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{ChatColors.Darkred}#{i + 1} {ChatColors.Yellow}Koniec: {dateTime:yyyy-MM-dd HH:mm:ss}");
+                string formatedTime = dateTime.ToString(Localizer["services.datetime"]);
+
+                commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.entry", i + 1, formatedTime]}");
             }
         }
     }
 
-    [ConsoleCommand("css_sklepsms", "Main shop command")]
+    [ConsoleCommand("css_sklepsms", "")]
     public void OnShopCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
+        if (!Player.IsValid(player))
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Nie znaleziono twoich danych w bazie danych, spróbuj ponownie za chwilę.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.invalid"]}");
             return;
         }
 
-        if (!WebManager!.IsLoaded)
+        if (!PlayerCache.ContainsKey(player!))
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Sklep jest obecnie niedostępny, spróbuj ponownie za chwilę.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.no_data"]}");
+        }
+
+        if(WebManager!.Services.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.no_services"]}");
             return;
         }
 
-        player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Purple}Dostępne usługi({WebManager.Services.Count})");
+
+        player!.PrintToChat($"{Config.Settings.Prefix}{Localizer["services.available", WebManager.Services.Count]}");
 
         for (int index = 0; index < WebManager.Services.Count; index++)
         {
             var service = WebManager.Services[index];
-            player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Darkred}#{index + 1} {ChatColors.Yellow}{service.Name} {ChatColors.Darkred}({service.Count} {service.Unit}) {ChatColors.Yellow}za {service.PlanValue / 100} {WebManager.CurrencyName}");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["sservices.shopservice_entry",
+               index + 1, service.Name, service.Count, service.Unit, service.PlanValue / (float)100, WebManager.CurrencyName]}");
         }
 
-        player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Purple}Aby kupić usługę wpisz {ChatColors.Yellow}!kupsms <numer usługi> <kodsms>");
-        player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Gold}Przykład: {ChatColors.Yellow}!kupsms 1 123456");
+        commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.how_to_buy"]}");
+        commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.how_to_buy_example"]}");
+    }
+
+
+    [ConsoleCommand("css_kupusluge", "")]
+    public void OnShopBuyCommmand(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Player.IsValid(player))
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.invalid"]}");
+            return;
+        }
+
+        if (!PlayerCache.ContainsKey(player!))
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.no_data"]}");
+        }
+
+        if (WebManager!.Services.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.no_services"]}");
+            return;
+        }
+
+        if(commandInfo.ArgCount < 1)
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.invalid_command"]}");
+            return;
+        }
+
+        string planIdString = commandInfo.GetArg(1);
+        if(!int.TryParse(planIdString, out int planId))
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.invalid_command"]}");
+            return;
+        }
+
+        ServiceSmsData service = WebManager.GetService(planId);
+        if(service == null)
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.invalid_command"]}");
+            return;
+        }
+
+        commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.how_to_buy_sms", 
+            service.Name, service.Count, service.Unit, service.SmsMessage, service.SmsNumber]}");
+          
     }
 
     [ConsoleCommand("css_kupsms", "Buys service")]
     public void OnBuyCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
+        if (!Player.IsValid(player))
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Nie znaleziono twoich danych w bazie danych, spróbuj ponownie za chwilę.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.invalid"]}");
             return;
         }
 
-        if (!WebManager!.IsLoaded)
+        if (!PlayerCache.ContainsKey(player!))
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Sklep jest obecnie niedostępny, spróbuj ponownie za chwilę.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["player.no_data"]}");
+        }
+
+        if(WebManager!.Services.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.no_services"]}");
             return;
         }
 
         if(commandInfo.ArgCount < 2)
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Niepoprawna komenda, wpisz {ChatColors.Yellow}!sklepsms {ChatColors.Red}aby zobaczyć dostępne usługi.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.buy_sms_invalid_command"]}");
             return;
         }
         
@@ -81,23 +146,22 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
         if(!int.TryParse(planIDString, out int planID))
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Niepoprawna komenda, wpisz {ChatColors.Yellow}!sklepsms {ChatColors.Red}aby zobaczyć dostępne usługi.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.buy_sms_invalid_command"]}");
             return;
         }
 
         string smsCode = commandInfo.GetArg(2);
-
 
         var steamId64 = player!.AuthorizedSteamID!.SteamId64;
         ServiceSmsData data = WebManager!.GetService(planID);
 
         if(data == null)
         {
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Niepoprawna komenda, wpisz {ChatColors.Yellow}!sklepsms {ChatColors.Red}aby zobaczyć dostępne usługi.");
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.buy_sms_invalid_command"]}");
             return;
         }
 
-        string playerIP = player.IpAddress.Split(':')[0];
+        string playerIP = player!.IpAddress!.Split(':')[0];
         string playerName = player.PlayerName;
 
         Task.Run( async () =>
@@ -109,14 +173,14 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             {
                 Server.NextFrame(() =>
                 {
-                    player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Green}Usługa została zakupiona.");
+                    commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["ervices.buy_success"]}");
                 });
             }
             else
             {
                 Server.NextFrame(() =>
                 {
-                    player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Red}Nie udało się zakupić usługi.");
+                    commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.buy_failed"]}");
                 });
             }
         });

@@ -7,7 +7,7 @@ public class ServiceSmsData
     public string Unit { get; set; } = "days";
     public decimal SmsCodeValue { get; set; } = 31.00m;
     public string SmsMessage { get; set; } = "pukawka";
-    public string SmsCode { get; set; } = "123456";
+    public string SmsNumber { get; set; } = "123456";
     public string PlanCode { get; set; } = "s31";
 
     // That is actually plan price * 100%

@@ -69,7 +69,7 @@ namespace SklepCSManager
                         Unit = responseList[i + 2],
                         SmsCodeValue = decimal.Parse(responseList[i + 3]),
                         SmsMessage = responseList[i + 4],
-                        SmsCode = responseList[i + 5],
+                        SmsNumber = responseList[i + 5],
                         PlanCode = responseList[i + 6],
                         PlanValue = int.Parse(responseList[i + 7])
                     };
