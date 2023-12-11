@@ -42,7 +42,7 @@ namespace SklepCSManager
                 if (response.IsSuccessStatusCode)
                 {
                     string responseData = await response.Content.ReadAsStringAsync();
-                    Server.PrintToConsole($"[SklepcsWebManager] Query response: {responseData}");
+                 
                     return BreakQuery(responseData);
                 }
                 else

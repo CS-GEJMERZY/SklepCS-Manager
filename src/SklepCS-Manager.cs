@@ -40,6 +40,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             await WebManager!.LoadWebServices();
             await WebManager!.LoadWebSettings();
         });
+
         Console.WriteLine("SklepCS Plugin loaded. ");
 
         RegisterListener<Listeners.OnClientDisconnect>((slot) => { OnClientDisconnect(slot); });
