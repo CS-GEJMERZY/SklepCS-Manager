@@ -21,7 +21,8 @@ namespace SklepCSManager
         public List<ServiceSmsData> Services { get; set; } = new List<ServiceSmsData>();
 
         private bool _servicesLoaded = false;
-        public bool _settingsLoaded = false;
+        private bool _settingsLoaded = false;
+
 
         public bool IsLoaded => _servicesLoaded && _settingsLoaded;
 
@@ -47,7 +48,11 @@ namespace SklepCSManager
                 }
                 else
                 {
-                    throw new Exception($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    Server.NextFrame(() =>
+                    {
+                        Server.PrintToChatAll($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    });
+                    return new List<string>();
                 }
             }
         }
@@ -59,7 +64,7 @@ namespace SklepCSManager
                 var responseList = await QueryApiAsync(SklepcsWebOperation.GetServices);
 
                 // Break the response into lists of 8 values
-                for (int i = 0; i < responseList.Count; i += 8)
+                for (int i = 0; i + 8 < responseList.Count; i += 8)
                 {
                     ServiceSmsData service = new ServiceSmsData
                     {
@@ -80,7 +85,10 @@ namespace SklepCSManager
             }
             catch (Exception ex)
             {
-                // log error to plugin log
+                Server.NextFrame(() =>
+                {
+                    Server.PrintToChatAll($"Error services: {ex.Message}");
+                });
                 return false;
             }
         }
@@ -99,7 +107,10 @@ namespace SklepCSManager
             }
             catch (Exception ex)
             {
-                // log error to plugin log
+                Server.NextFrame(() =>
+                {
+                    Server.PrintToChatAll($"Error settings: {ex.Message}");
+                });
                 return false;
             }
         }
@@ -118,7 +129,6 @@ namespace SklepCSManager
             }
             catch (Exception ex)
             {
-                // LOG error to plugin log
                 return -1;
             }
         }
@@ -147,6 +157,7 @@ namespace SklepCSManager
                 catch (Exception ex)
                 {
                     // TO:DO log error to plugin log
+                    throw;
                     return false;
                 }
             }

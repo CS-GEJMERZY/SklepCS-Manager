@@ -37,8 +37,17 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     {
         Task.Run(async () =>
         {
-            await WebManager!.LoadWebServices();
-            await WebManager!.LoadWebSettings();
+            bool webServices = await WebManager!.LoadWebServices();
+            bool settings = await WebManager!.LoadWebSettings();
+
+            if(!webServices || !settings)
+            {
+                Server.NextFrame(() =>
+                {
+                    Server.PrintToChatAll($"Failed to load web services or settings.");
+                });
+                
+            }
         });
 
         Console.WriteLine("SklepCS Plugin loaded. ");

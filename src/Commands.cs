@@ -9,7 +9,6 @@ namespace SklepCSManager;
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
     [ConsoleCommand("css_uslugi", "Shows players active services")]
-    [ConsoleCommand("css_ile", "hows players active services")]
     public void OnServicesCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
@@ -29,11 +28,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         }
     }
 
-    [ConsoleCommand("css_sklep", "Main shop command")]
-    [ConsoleCommand("css_shop", "Main shop command")]
     [ConsoleCommand("css_sklepsms", "Main shop command")]
-    [ConsoleCommand("css_kupvip", "Main shop command")]
-
     public void OnShopCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
