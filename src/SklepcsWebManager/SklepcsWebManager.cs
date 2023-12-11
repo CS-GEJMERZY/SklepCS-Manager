@@ -1,6 +1,4 @@
-﻿using CounterStrikeSharp.API;
-
-namespace SklepCSManager
+﻿namespace SklepCSManager
 {
     enum SklepcsWebOperation
     {
@@ -43,7 +41,7 @@ namespace SklepCSManager
                 if (response.IsSuccessStatusCode)
                 {
                     string responseData = await response.Content.ReadAsStringAsync();
-                 
+
                     return BreakQuery(responseData);
                 }
                 else
@@ -81,7 +79,7 @@ namespace SklepCSManager
             }
             catch (Exception ex)
             {
-                
+
                 return false;
             }
         }

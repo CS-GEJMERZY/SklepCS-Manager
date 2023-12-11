@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace SklepCSManager;
 
@@ -40,13 +41,20 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             bool webServices = await WebManager!.LoadWebServices();
             bool settings = await WebManager!.LoadWebSettings();
 
-            if(!webServices || !settings)
+            if (!webServices)
             {
                 Server.NextFrame(() =>
                 {
-                    Server.PrintToChatAll($"Failed to load web services or settings.");
+                    Logger.LogError("Failed to load web services.");
                 });
-                
+            }
+
+            if (!settings)
+            {
+                Server.NextFrame(() =>
+                {
+                    Logger.LogError("Failed to load web settings.");
+                });
             }
         });
 
