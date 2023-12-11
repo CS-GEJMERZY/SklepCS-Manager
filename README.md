@@ -19,8 +19,8 @@ SklepCS Manager is a plugin designed to integrate with https://sklepcs.pl/.
 Upon the first launch, the _**SklepCS-Manager.json**_  file will be automatically created in **_csgo/addons/counterstrikesharp/configs/plugins/SklepCS-Manager**
 
 ## Commands
-!uslugi: Displays a list of all active services for a player.
-!sklepsms: Opens the main shop menu.
-!kupsrodkami: Allows the player to purchase services using wallet money.
-!kupsms: Shows information about sending an SMS code.
-!kodsms: Receiving services by using an SMS code.
+- **!uslugi**: Displays a list of all active services for a player.
+- **!sklepsms**: Opens the main shop menu.
+- **!kupsrodkami**: Allows the player to purchase services using wallet money.
+- **!kupsms**: Shows information about sending an SMS code.
+- **!kodsms**: Receiving services by using an SMS code.
