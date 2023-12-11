@@ -118,9 +118,15 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             return;
         }
 
-        commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.how_to_buy_sms",
-            service.Name, service.Count, service.Unit, service.SmsMessage, service.SmsNumber, planId]}");
+        string instruction = $"{Config.Settings.Prefix}{Localizer["services.how_to_buy_sms",
+                       service.Name, service.Count, service.Unit, service.SmsMessage, service.SmsNumber, service.SmsCodeValue, planId]}";
 
+        List<string> lines = GetLines(instruction);
+
+        foreach (var line in lines)
+        {
+            commandInfo.ReplyToCommand(line);
+        }
     }
 
     [ConsoleCommand("css_kupsms", "Buys service")]

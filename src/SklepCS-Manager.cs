@@ -32,6 +32,8 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         DatabaseManager = new SklepcsDatabaseManager(Config.Settings.Database);
         PermissionManager = new SklepcsPermissionManager(Config.PermissionGroups);
         WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
+
+        PreparePrefixColor();
     }
 
     public override void Load(bool hotReload)
@@ -39,7 +41,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         Task.Run(async () =>
         {
             bool webServices = await WebManager!.LoadWebServices();
-            
+
             await Task.Delay(500);
             bool settings = await WebManager!.LoadWebSettings();
 
