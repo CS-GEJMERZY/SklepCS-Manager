@@ -35,6 +35,11 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public override void Load(bool hotReload)
     {
+        Task.Run(async () =>
+        {
+            await WebManager!.LoadWebServices();
+            await WebManager!.LoadWebSettings();
+        });
         Console.WriteLine("SklepCS Plugin loaded. ");
 
         RegisterListener<Listeners.OnClientDisconnect>((slot) => { OnClientDisconnect(slot); });
