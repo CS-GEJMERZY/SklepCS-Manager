@@ -21,10 +21,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         if (PlayerCache[player!].ConnectionData.Count > 0)
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Blue}Twoje aktywne usługi:");
-            for (int i = 0; i < PlayerCache[player].ConnectionData.Count; i++)
+            for (int i = 0; i < PlayerCache[player!].ConnectionData.Count; i++)
             {
-                DateTime dateTime = PlayerCache[player].ConnectionData[i].End;
-                commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{ChatColors.Darkred}#{i + 1} {ChatColors.Yellow}Koniec: {dateTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                DateTime dateTime = PlayerCache[player!].ConnectionData[i].End;
+                commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{ChatColors.Darkred}#{i + 1} {ChatColors.Yellow}Koniec: {dateTime:yyyy-MM-dd HH:mm:ss}");
             }
         }
     }
@@ -48,12 +48,13 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             return;
         }
 
-        player.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Purple}Dostępne usługi({WebManager.Services.Count})");
+        player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Purple}Dostępne usługi({WebManager.Services.Count})");
 
-        foreach (WebManager.Services, (service, index) =>
+        for (int index = 0; index < WebManager.Services.Count; index++)
         {
-            player.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Darkred}#{index + 1} {ChatColors.Yellow}{service.Name} {ChatColors.Darkred}({service.Count} {service.Unit}) {ChatColors.Yellow}za {service.PlanValue / 100} {WebManager.CurrencyName}");
-        });
+            var service = WebManager.Services[index];
+            player!.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Darkred}#{index + 1} {ChatColors.Yellow}{service.Name} {ChatColors.Darkred}({service.Count} {service.Unit}) {ChatColors.Yellow}za {service.PlanValue / 100} {WebManager.CurrencyName}");
+        }
 
     }
 }
