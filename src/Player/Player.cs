@@ -1,6 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
-
+namespace SklepCSManager;
 public class Player
 {
     public List<PlayerConnectionData> ConnectionData { get; private set; }

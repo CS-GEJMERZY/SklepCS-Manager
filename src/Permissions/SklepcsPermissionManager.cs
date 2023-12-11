@@ -1,4 +1,6 @@
-﻿public class SklepcsPermissionManager
+﻿namespace SklepCSManager;
+
+public class SklepcsPermissionManager
 {
     public List<SklepcsPermission> Permissions { get; }
 

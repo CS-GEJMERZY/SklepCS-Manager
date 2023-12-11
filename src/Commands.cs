@@ -1,4 +1,4 @@
-﻿using Config;
+﻿
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -10,17 +10,15 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 {
     [ConsoleCommand("css_uslugi", "Shows players active services")]
     [ConsoleCommand("css_ile", "hows players active services")]
-    public void OnShopCommand(CCSPlayerController? player, CommandInfo commandInfo)
+    public void OnServicesCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if(!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
+        if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Nie znaleziono twoich danych w bazie danych, spróbuj ponownie za chwilę.");
             return;
         }
 
-        //commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Blue}Usługi zakupisz w naszym sklepie WWW: {ChatColors.LightPurple}{Config.Sklepcs.WebsiteURL}");
-
-        if (PlayerCache[player].ConnectionData.Count > 0)
+        if (PlayerCache[player!].ConnectionData.Count > 0)
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Blue}Twoje aktywne usługi:");
             for (int i = 0; i < PlayerCache[player].ConnectionData.Count; i++)
@@ -29,6 +27,34 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{ChatColors.Darkred}#{i + 1} {ChatColors.Yellow}Koniec: {dateTime.ToString("yyyy-MM-dd HH:mm:ss")}");
             }
         }
+    }
+
+    [ConsoleCommand("css_sklep", "Main shop command")]
+    [ConsoleCommand("css_shop", "Main shop command")]
+    [ConsoleCommand("css_sklepsms", "Main shop command")]
+    [ConsoleCommand("css_kupvip", "Main shop command")]
+
+    public void OnShopCommand(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Player.IsValid(player) && !PlayerCache.ContainsKey(player!))
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Nie znaleziono twoich danych w bazie danych, spróbuj ponownie za chwilę.");
+            return;
+        }
+
+        if (!WebManager!.IsLoaded)
+        {
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix} {ChatColors.Red}Sklep jest obecnie niedostępny, spróbuj ponownie za chwilę.");
+            return;
+        }
+
+        player.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Purple}Dostępne usługi({WebManager.Services.Count})");
+
+        foreach (WebManager.Services, (service, index) =>
+        {
+            player.PrintToChat($"{Config.Settings.Prefix} {ChatColors.Darkred}#{index + 1} {ChatColors.Yellow}{service.Name} {ChatColors.Darkred}({service.Count} {service.Unit}) {ChatColors.Yellow}za {service.PlanValue / 100} {WebManager.CurrencyName}");
+        });
+
     }
 }
 

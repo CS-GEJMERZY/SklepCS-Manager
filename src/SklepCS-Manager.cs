@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Config;
+
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -19,6 +19,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     internal SklepcsDatabaseManager? DatabaseManager;
     internal SklepcsPermissionManager? PermissionManager;
+    internal SklepcsWebManager? WebManager;
 
 
     internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
@@ -29,6 +30,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
         DatabaseManager = new SklepcsDatabaseManager(Config.Settings.Database);
         PermissionManager = new SklepcsPermissionManager(Config.PermissionGroups);
+        WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
     }
 
     public override void Load(bool hotReload)

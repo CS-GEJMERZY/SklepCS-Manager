@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using MySqlConnector;
-
+namespace SklepCSManager;
 public class SklepcsDatabaseManager
 {
     internal string ConnectionsString = string.Empty;

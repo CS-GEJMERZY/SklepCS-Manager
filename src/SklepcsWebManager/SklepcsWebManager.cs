@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using CounterStrikeSharp.API;
-using Models;
+﻿using CounterStrikeSharp.API;
 
 namespace SklepCSManager
 {
@@ -18,16 +13,27 @@ namespace SklepCSManager
     {
         public string CurrencyName { get; set; } = "wPLN";
         public string ShopWebsite { get; set; } = "sklep.csgejmerzy.pl";
-        public string ApiKey { get; set; } = "1234567890";
-        public string ApiUrl { get; set; } = "https://sklepcs.pl/";
-        public string ServerID { get; set; } = "1";
-        public int ApiVersion { get; set; } = 142;
+        private string ApiKey { get; set; } = "1234567890";
+        private string ApiUrl { get; set; } = "https://sklepcs.pl/";
+        private string _serverID { get; set; } = "1";
+        private int ApiVersion { get; set; } = 142;
 
         public List<ServiceSmsData> Services { get; set; } = new List<ServiceSmsData>();
 
+        private bool _servicesLoaded = false;
+        public bool _settingsLoaded = false;
+
+        public bool IsLoaded => _servicesLoaded && _settingsLoaded;
+
+        public SklepcsWebManager(string serverID, string apiKey)
+        {
+            _serverID = serverID;
+            ApiKey = apiKey;
+        }
+
         private async Task<List<string>> QueryApiAsync(SklepcsWebOperation operation, string queryExtraData = "")
         {
-            string apiUrl = $"{ApiUrl}api_server_uslugi.php?api={ApiKey}&serwer={ShopWebsite}&ver={ApiVersion}&operacja={(int)operation}" + queryExtraData;
+            string apiUrl = $"{ApiUrl}api_server_uslugi.php?api={ApiKey}&serwer={_serverID}&ver={ApiVersion}&operacja={(int)operation}" + queryExtraData;
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -69,7 +75,7 @@ namespace SklepCSManager
 
                     Services.Add(service);
                 }
-
+                _servicesLoaded = true;
                 return true;
             }
             catch (Exception ex)
@@ -88,6 +94,7 @@ namespace SklepCSManager
                 CurrencyName = responseList[0];
                 ShopWebsite = responseList[1];
 
+                _settingsLoaded = true;
                 return true;
             }
             catch (Exception ex)
@@ -110,15 +117,15 @@ namespace SklepCSManager
                 return money;
             }
             catch (Exception ex)
-            {  
+            {
                 // LOG error to plugin log
-                return -1; 
+                return -1;
             }
         }
 
         public async Task<bool> RegisterServiceBuy(ulong steamId64, string planShortId, string playerIP, string playerName)
         {
-            string apiUrl = $"{ApiUrl}api_server.php?api={ApiKey}&steam64={steamId64}&tekst={planShortId}&ip={playerIP}&serwer={ShopWebsite}&ver={ApiVersion}&client={5}&name={playerName}";
+            string apiUrl = $"{ApiUrl}api_server.php?api={ApiKey}&steam64={steamId64}&tekst={planShortId}&ip={playerIP}&serwer={_serverID}&ver={ApiVersion}&client={5}&name={playerName}";
 
             using (HttpClient httpClient = new HttpClient())
             {
