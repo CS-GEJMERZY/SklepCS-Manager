@@ -10,7 +10,7 @@
     public class SklepcsWebManager
     {
         public string CurrencyName { get; set; } = "wPLN";
-        public string ShopWebsite { get; set; } = "sklep.csgejmerzy.pl";
+        private string ShopWebsite { get; set; } = "sklep.csgejmerzy.pl";
         private string ApiKey { get; set; } = "1234567890";
         private string ApiUrl { get; set; } = "https://sklepcs.pl/";
         private string _serverID { get; set; } = "1";
@@ -36,11 +36,11 @@
             ApiKey = apiKey;
         }
 
-        private async Task<List<string>> QueryApiAsync(SklepcsWebOperation operation, string queryExtraData = "")
+        private async Task<List<string>> QueryServerApisync(SklepcsWebOperation operation, string queryExtraData = "")
         {
             string apiUrl = $"{ApiUrl}api_server_uslugi.php?api={ApiKey}&serwer={_serverID}&ver={ApiVersion}&operacja={(int)operation}" + queryExtraData;
             LastQueryString = apiUrl;
-            using (HttpClient httpClient = new HttpClient())
+            using (HttpClient httpClient = new())
             {
                 HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
 
@@ -62,12 +62,12 @@
         {
             try
             {
-                var responseList = await QueryApiAsync(SklepcsWebOperation.GetServices);
+                var responseList = await QueryServerApisync(SklepcsWebOperation.GetServices);
 
                 // Break the response into lists of 8 values
                 for (int i = 0; i + 8 < responseList.Count; i += 8)
                 {
-                    ServiceSmsData service = new ServiceSmsData
+                    ServiceSmsData service = new()
                     {
                         Name = responseList[i],
                         Count = int.Parse(responseList[i + 1]),
@@ -95,7 +95,7 @@
         {
             try
             {
-                var responseList = await QueryApiAsync(SklepcsWebOperation.GetSettings);
+                var responseList = await QueryServerApisync(SklepcsWebOperation.GetSettings);
 
                 CurrencyName = responseList[0];
                 ShopWebsite = responseList[1];
@@ -116,7 +116,7 @@
 
             try
             {
-                var responseList = await QueryApiAsync(SklepcsWebOperation.GetMoney, queryExtraData);
+                var responseList = await QueryServerApisync(SklepcsWebOperation.GetMoney, queryExtraData);
 
                 int ClientIndex = int.Parse(responseList[0]);
                 int money = int.Parse(responseList[1]); // Money * 100
@@ -133,7 +133,7 @@
         {
             string apiUrl = $"{ApiUrl}api_server.php?api={ApiKey}&steam64={steamId64}&tekst={planShortId + '-' + SmsCode}&ip={playerIP}&serwer={_serverID}&ver={ApiVersion}&client={5}&name={playerName}";
 
-            using (HttpClient httpClient = new HttpClient())
+            using (HttpClient httpClient = new())
             {
                 try
                 {
@@ -156,6 +156,7 @@
                 }
             }
         }
+
 
         public ServiceSmsData? GetService(int planID)
         {

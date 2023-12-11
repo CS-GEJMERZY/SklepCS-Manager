@@ -5,19 +5,17 @@ namespace SklepCSManager;
 
 public partial class SklepcsManagerPlugin
 {
-    public void PreparePrefixColor()
+    public void PreparePluginPrefix()
     {
-        string result = Config.Settings.Prefix;
         foreach (FieldInfo field in typeof(ChatColors).GetFields())
         {
             string pattern = $"{{{field.Name}}}";
 
-            if (result.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+            if (PluginChatPrefix.Contains(pattern, StringComparison.OrdinalIgnoreCase))
             {
-                result = result.Replace(pattern, field.GetValue(null)!.ToString(), StringComparison.OrdinalIgnoreCase);
+                PluginChatPrefix = PluginChatPrefix.Replace(pattern, field.GetValue(null)!.ToString(), StringComparison.OrdinalIgnoreCase);
             }
         }
-        Config.Settings.Prefix = result;
     }
 
 

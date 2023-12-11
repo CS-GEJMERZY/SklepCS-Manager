@@ -25,6 +25,8 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
 
+    public string PluginChatPrefix { get; set; }
+
     public void OnConfigParsed(PluginConfig config)
     {
         Config = config;
@@ -33,7 +35,9 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         PermissionManager = new SklepcsPermissionManager(Config.PermissionGroups);
         WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
 
-        PreparePrefixColor();
+
+        PluginChatPrefix = Config.Settings.Prefix;
+        PreparePluginPrefix();
     }
 
     public override void Load(bool hotReload)
@@ -75,9 +79,11 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 {
                     PlayerCache.Add(player, new Player());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
+                    var steamId64 = player.AuthorizedSteamID.SteamId64;
                     Task.Run(async () =>
                     {
                         await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+                        await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
 
                         Server.NextFrame(() =>
                         {

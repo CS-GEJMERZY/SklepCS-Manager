@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
+
 namespace SklepCSManager;
 public class Player
 {
@@ -7,8 +8,15 @@ public class Player
     public List<string> AddedPermissions { get; private set; }
 
     private bool _loadedDatabaseData = false;
+    public bool _loadedSklepcsData { get; set; } = false;
+
 
     public bool IsLoadedDatabase => _loadedDatabaseData;
+    public bool IsLoadedSklepcs => _loadedSklepcsData;
+
+    public bool IsFullyLoaded => _loadedDatabaseData && _loadedSklepcsData;
+
+    public double SklepcsMoney { get; set; } = 0;
 
     public Player()
     {
@@ -26,6 +34,23 @@ public class Player
     {
         ConnectionData = await databaseManager.FetchPlayerData(SteamID2, serverTag);
         _loadedDatabaseData = true;
+    }
+
+    public async Task<bool> LoadSklepcsData(ulong SteamId64, SklepcsWebManager webManager)
+    {
+        int money = await webManager.LoadPlayerMoney(SteamId64);
+
+        if (SklepcsMoney == -1)
+        {
+            _loadedSklepcsData = false;
+            return false;
+        }
+
+        float moneyFloat = (float)money / 100;
+        SklepcsMoney = Math.Round(moneyFloat, 2);
+
+        _loadedSklepcsData = true;
+        return true;
     }
 
     public void LoadPermissions(CCSPlayerController player, SklepcsPermissionManager PermisisonManager)
