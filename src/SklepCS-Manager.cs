@@ -39,13 +39,15 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         Task.Run(async () =>
         {
             bool webServices = await WebManager!.LoadWebServices();
+            
+            await Task.Delay(500);
             bool settings = await WebManager!.LoadWebSettings();
 
             if (!webServices)
             {
                 Server.NextFrame(() =>
                 {
-                    Logger.LogError("Failed to load web services.");
+                    Logger.LogError($"Failed to load web services. Last query: {WebManager.LastQueryString}\n Last exception: {WebManager.LastException}\n Last rs: {WebManager.LastResponse}");
                 });
             }
 
@@ -53,7 +55,8 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             {
                 Server.NextFrame(() =>
                 {
-                    Logger.LogError("Failed to load web settings.");
+                    Logger.LogError($"Failed to load web settings. Last query: {WebManager.LastQueryString}\n Last exception: {WebManager.LastException}\n Last rs: {WebManager.LastResponse}");
+
                 });
             }
         });

@@ -16,13 +16,19 @@
         private string _serverID { get; set; } = "1";
         private int ApiVersion { get; set; } = 142;
 
+        public string LastQueryString { get; set; } = "";
+        public string LastResponse { get; set; } = "";
+        public string LastException { get; set; } = "";
+
+
+
         public List<ServiceSmsData> Services { get; set; } = new List<ServiceSmsData>();
 
         private bool _servicesLoaded = false;
         private bool _settingsLoaded = false;
 
 
-        public bool IsLoaded => _servicesLoaded && _settingsLoaded;
+        public bool IsAvailable => _servicesLoaded && _settingsLoaded && Services.Count > 0;
 
         public SklepcsWebManager(string serverID, string apiKey)
         {
@@ -33,7 +39,7 @@
         private async Task<List<string>> QueryApiAsync(SklepcsWebOperation operation, string queryExtraData = "")
         {
             string apiUrl = $"{ApiUrl}api_server_uslugi.php?api={ApiKey}&serwer={_serverID}&ver={ApiVersion}&operacja={(int)operation}" + queryExtraData;
-
+            LastQueryString = apiUrl;
             using (HttpClient httpClient = new HttpClient())
             {
                 HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
@@ -41,6 +47,7 @@
                 if (response.IsSuccessStatusCode)
                 {
                     string responseData = await response.Content.ReadAsStringAsync();
+                    LastResponse = responseData;
 
                     return BreakQuery(responseData);
                 }
@@ -65,7 +72,7 @@
                         Name = responseList[i],
                         Count = int.Parse(responseList[i + 1]),
                         Unit = responseList[i + 2],
-                        SmsCodeValue = decimal.Parse(responseList[i + 3]),
+                        SmsCodeValue = responseList[i + 3],
                         SmsMessage = responseList[i + 4],
                         SmsNumber = responseList[i + 5],
                         PlanCode = responseList[i + 6],
@@ -79,7 +86,7 @@
             }
             catch (Exception ex)
             {
-
+                LastException = ex.Message;
                 return false;
             }
         }
@@ -98,6 +105,7 @@
             }
             catch (Exception ex)
             {
+                LastException = ex.Message;
                 return false;
             }
         }
@@ -116,6 +124,7 @@
             }
             catch (Exception ex)
             {
+                LastException = ex.Message;
                 return -1;
             }
         }
@@ -142,6 +151,7 @@
                 }
                 catch (Exception ex)
                 {
+                    LastException = ex.Message;
                     return false;
                 }
             }

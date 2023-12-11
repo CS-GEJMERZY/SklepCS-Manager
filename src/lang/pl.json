@@ -10,7 +10,7 @@
     "services.how_to_buy" : "{purple}Aby zakupić usługę, wpisz !kupusluge <numer usługi>",
     "services.how_to_buy_example" : "{gold}Przykład: {default} !kupusluge 1",
     "services.invalid_command" : "{gold}Prawidłowe użycie komendy: {default}!kupusluge 3",
-    "services.buy_instructions" : "Aby kupić {0} na {1} {2}, wyślij\nSms o treści: {gold}{3}\n{default}Na numer: {gold}{4}\n{lightred}A następnie użyj komendy: {green}!kupsms {5} <kodsms>\n{lightred}Przykład: {gold}!kupsms 5 ABCDEF",
+    "services.how_to_buy_sms" : "Aby kupić {0} na {1} {2}, wyślij\nSms o treści: {gold}{3}\n{default}Na numer: {gold}{4}\n{lightred}A następnie użyj komendy: {green}!kupsms {5} <kodsms>\n{lightred}Przykład: {gold}!kupsms 5 ABCDEF",
     "services.buy_sms_invalid_command" : "{gold}Prawidłowe użycie komendy: {default}!kupsms <numer usługi> <kodsms>",
     "services.buy_success" : "Usługa {green}{0} na {1} {2} {default}została pomyślnie zakupiona.",
     "services.buy_failed" : "{darkred}Wystąpił błąd podczas zakupu usługi. Upewnij się, że wprowadzony kodsms jest prawidłowy."

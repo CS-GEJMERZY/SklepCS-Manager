@@ -64,11 +64,11 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
         player!.PrintToChat($"{Config.Settings.Prefix}{Localizer["services.available", WebManager.Services.Count]}");
 
-        for (int index = 0; index < WebManager.Services.Count; index++)
+        for (int i = 0; i < WebManager.Services.Count; i++)
         {
-            var service = WebManager.Services[index];
-            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["sservices.shopservice_entry",
-               index + 1, service.Name, service.Count, service.Unit, service.PlanValue / (float)100, WebManager.CurrencyName]}");
+            var service = WebManager.Services[i];
+            commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.shopservice_entry",
+               i + 1, service.Name, service.Count, service.Unit, service.PlanValue / (float)100, WebManager.CurrencyName]}");
         }
 
         commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.how_to_buy"]}");
@@ -111,7 +111,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             return;
         }
 
-        ServiceSmsData service = WebManager.GetService(planId);
+        ServiceSmsData? service = WebManager!.GetService(planId);
         if (service == null)
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.invalid_command"]}");
@@ -119,7 +119,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         }
 
         commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.how_to_buy_sms",
-            service.Name, service.Count, service.Unit, service.SmsMessage, service.SmsNumber]}");
+            service.Name, service.Count, service.Unit, service.SmsMessage, service.SmsNumber, planId]}");
 
     }
 
@@ -162,7 +162,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         string smsCode = commandInfo.GetArg(2);
 
         var steamId64 = player!.AuthorizedSteamID!.SteamId64;
-        ServiceSmsData data = WebManager!.GetService(planID);
+        ServiceSmsData? data = WebManager!.GetService(planID);
 
         if (data == null)
         {
