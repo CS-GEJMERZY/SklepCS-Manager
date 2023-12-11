@@ -55,7 +55,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             return;
         }
 
-        if (WebManager!.Services.Count == 0)
+        if (!WebManager!.IsAvailable)
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.no_services"]}");
             return;
@@ -92,7 +92,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             return;
         }
 
-        if (WebManager!.Services.Count == 0)
+        if (!WebManager!.IsAvailable)
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.no_services"]}");
             return;
@@ -139,7 +139,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             return;
         }
 
-        if (WebManager!.Services.Count == 0)
+        if (!WebManager!.IsAvailable)
         {
             commandInfo.ReplyToCommand($"{Config.Settings.Prefix}{Localizer["services.no_services"]}");
             return;
