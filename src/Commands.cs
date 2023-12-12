@@ -72,7 +72,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 return;
             }
 
-            if (commandInfo.ArgCount == 1 && int.TryParse(commandInfo.GetArg(1), out int planID))
+            if (commandInfo.ArgCount >= 1 && int.TryParse(commandInfo.GetArg(1), out int planID))
             {
                 var steamId64 = player!.AuthorizedSteamID!.SteamId64;
                 ServicePlanData? data = WebManager!.GetService(planID);
@@ -132,7 +132,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 return;
             }
 
-            if (commandInfo.ArgCount == 1 && int.TryParse(commandInfo.GetArg(1), out int planId))
+            if (commandInfo.ArgCount >= 1 && int.TryParse(commandInfo.GetArg(1), out int planId))
             {
                 ServicePlanData? service = WebManager!.GetService(planId);
                 if (service == null)
@@ -163,8 +163,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     }
 
 
-
-
     [ConsoleCommand("css_kodsms", "Buys service via sms")]
     public void OnBuySmsCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
@@ -177,7 +175,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 return;
             }
 
-            if (commandInfo.ArgCount == 2 && int.TryParse(commandInfo.GetArg(1), out int planID))
+            if (commandInfo.ArgCount >= 2 && int.TryParse(commandInfo.GetArg(1), out int planID))
             {
                 string smsCode = commandInfo.GetArg(2);
 
@@ -224,7 +222,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             }
         });
     }
-
 
 
     private void HandlePlayerCommand(CCSPlayerController? player, CommandInfo commandInfo, Action action)
