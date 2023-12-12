@@ -4,7 +4,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 namespace SklepCSManager;
 public class Player
 {
-    public List<PlayerConnectionData> ConnectionData { get; private set; }
+    public List<PlayerDatabaseData> ConnectionData { get; private set; }
     public List<string> AddedPermissions { get; private set; }
 
     private bool _loadedDatabaseData = false;
@@ -20,7 +20,7 @@ public class Player
 
     public Player()
     {
-        ConnectionData = new List<PlayerConnectionData>();
+        ConnectionData = new List<PlayerDatabaseData>();
         AddedPermissions = new List<string>();
     }
 
@@ -30,7 +30,7 @@ public class Player
     }
 
 
-    public async Task LoadDatabaseData(string SteamID2, string serverTag, SklepcsDatabaseManager databaseManager)
+    public async Task LoadDatabaseData(string SteamID2, string serverTag, DatabaseManager databaseManager)
     {
         ConnectionData = await databaseManager.FetchPlayerData(SteamID2, serverTag);
         _loadedDatabaseData = true;
@@ -53,7 +53,7 @@ public class Player
         return true;
     }
 
-    public void LoadPermissions(CCSPlayerController player, SklepcsPermissionManager PermisisonManager)
+    public void AssignPermissions(CCSPlayerController player, PermissionManager PermisisonManager)
     {
         List<string> fetchedPermissions = PermisisonManager.FetchPermissions(ConnectionData);
 

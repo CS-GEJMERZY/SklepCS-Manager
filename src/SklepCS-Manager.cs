@@ -18,21 +18,21 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public PluginConfig Config { get; set; }
 
-    internal SklepcsDatabaseManager? DatabaseManager;
-    internal SklepcsPermissionManager? PermissionManager;
+    internal DatabaseManager? DatabaseManager;
+    internal PermissionManager? PermissionManager;
     internal SklepcsWebManager? WebManager;
 
 
     internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
 
-    public string PluginChatPrefix { get; set; }
+    public string PluginChatPrefix { get; set; } = " DefaultPrefix";
 
     public void OnConfigParsed(PluginConfig config)
     {
         Config = config;
 
-        DatabaseManager = new SklepcsDatabaseManager(Config.Settings.Database);
-        PermissionManager = new SklepcsPermissionManager(Config.PermissionGroups);
+        DatabaseManager = new DatabaseManager(Config.Settings.Database);
+        PermissionManager = new PermissionManager(Config.PermissionGroups);
         WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
 
 
@@ -53,7 +53,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             {
                 Server.NextFrame(() =>
                 {
-                    Logger.LogError($"Failed to load web services. Last query: {WebManager.LastQueryString}\n Last exception: {WebManager.LastException}\n Last rs: {WebManager.LastResponse}");
+                    Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
                 });
             }
 
@@ -61,7 +61,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             {
                 Server.NextFrame(() =>
                 {
-                    Logger.LogError($"Failed to load web settings. Last query: {WebManager.LastQueryString}\n Last exception: {WebManager.LastException}\n Last rs: {WebManager.LastResponse}");
+                    Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
 
                 });
             }
@@ -87,7 +87,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
                         Server.NextFrame(() =>
                         {
-                            PlayerCache[player].LoadPermissions(player, PermissionManager!);
+                            PlayerCache[player].AssignPermissions(player, PermissionManager!);
                         });
                     });
                 }

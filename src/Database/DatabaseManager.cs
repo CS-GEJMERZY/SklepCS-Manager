@@ -1,12 +1,13 @@
 ﻿using System.Data;
 using MySqlConnector;
-namespace SklepCSManager;
-public class SklepcsDatabaseManager
-{
-    internal string ConnectionsString = string.Empty;
-    internal MySqlConnection Connection;
 
-    public SklepcsDatabaseManager(DatabaseData databaseConfig)
+namespace SklepCSManager;
+public class DatabaseManager
+{
+    private string ConnectionsString = string.Empty;
+    private MySqlConnection Connection;
+
+    public DatabaseManager(DatabaseData databaseConfig)
     {
         MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
         {
@@ -19,24 +20,17 @@ public class SklepcsDatabaseManager
 
         ConnectionsString = builder.ConnectionString;
 
-        try
-        {
-            Connection = new MySqlConnection(ConnectionsString);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Database is inaccesible. Error: {ex.Message}");
-        }
+        Connection = new MySqlConnection(ConnectionsString);
     }
 
-    public async Task<List<PlayerConnectionData>> FetchPlayerData(string SteamId2, string serverTag)
+    public async Task<List<PlayerDatabaseData>> FetchPlayerData(string SteamId2, string serverTag)
     {
         if (Connection == null)
         {
             throw new Exception("Database is null, but tried to query player data.");
         }
 
-        List<PlayerConnectionData> playerDataList = new List<PlayerConnectionData>();
+        List<PlayerDatabaseData> playerDataList = new List<PlayerDatabaseData>();
 
         using (var command = new MySqlCommand())
         {
@@ -49,20 +43,18 @@ public class SklepcsDatabaseManager
                 command.CommandText = query;
                 command.Connection = Connection;
 
-                using (var reader = command.ExecuteReader())
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    while (reader.Read())
+                    PlayerDatabaseData playerData = new PlayerDatabaseData
                     {
-                        PlayerConnectionData playerData = new PlayerConnectionData
-                        {
-                            AuthType = reader.GetString("authtype"),
-                            Flags = reader.GetString("flags"),
-                            Immunity = reader.GetInt32("immunity"),
-                            End = reader.GetDateTime("koniec")
-                        };
+                        AuthType = reader.GetString("authtype"),
+                        Flags = reader.GetString("flags"),
+                        Immunity = reader.GetInt32("immunity"),
+                        End = reader.GetDateTime("koniec")
+                    };
 
-                        playerDataList.Add(playerData);
-                    }
+                    playerDataList.Add(playerData);
                 }
             }
             catch (Exception ex)

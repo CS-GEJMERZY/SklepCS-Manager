@@ -13,144 +13,108 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     [ConsoleCommand("css_uslugi", "Show players active services")]
     public void OnServicesCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player))
+        HandlePlayerCommand(player, commandInfo, () =>
         {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.invalid"]}");
-            return;
-        }
-
-        if (!PlayerCache.ContainsKey(player!))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.no_data"]}");
-            Logger.LogWarning($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) tried to use command without data");
-            return;
-        }
-
-        if (PlayerCache[player!].ConnectionData.Count > 0)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["uslugi.your_services"]}");
-            for (int i = 0; i < PlayerCache[player!].ConnectionData.Count; i++)
+            if (PlayerCache[player!].ConnectionData.Count > 0)
             {
-                DateTime dateTime = PlayerCache[player!].ConnectionData[i].End;
-                string formatedTime = dateTime.ToString(Localizer["uslugi.datetime_format"]);
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["uslugi.your_services"]}");
+                for (int i = 0; i < PlayerCache[player!].ConnectionData.Count; i++)
+                {
+                    DateTime dateTime = PlayerCache[player!].ConnectionData[i].End;
+                    string formatedTime = dateTime.ToString(Localizer["uslugi.datetime_format"]);
 
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["uslugi.entry", i + 1, formatedTime]}");
+                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["uslugi.entry", i + 1, formatedTime]}");
+                }
             }
-        }
+        });
     }
 
     [ConsoleCommand("css_sklepsms", "Main shop menu")]
     public void OnShopCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player))
+        HandlePlayerCommand(player, commandInfo, () =>
         {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.invalid"]}");
-            return;
-        }
 
-        if (!PlayerCache.TryGetValue(player!, out var cache))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.no_data"]}");
-            Logger.LogWarning($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) tried to use command without data");
-            return;
-        }
+            if (!WebManager!.IsAvailable)
+            {
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+                return;
+            }
 
-        if (!WebManager!.IsAvailable)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
-            return;
-        }
+            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.shop_www", Config.Sklepcs.WebsiteURL]}");
+            if (!PlayerCache[player!].IsLoadedSklepcs)
+            {
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.shop_money", PlayerCache[player!].SklepcsMoney, WebManager.CurrencyName]}");
+            }
 
-        commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.shop_www", Config.Sklepcs.WebsiteURL]}");
-        if (cache.IsLoadedSklepcs)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.shop_money", cache.SklepcsMoney, WebManager.CurrencyName]}");
-        }
+            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.available", WebManager.Services.Count]}");
 
-        commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.available", WebManager.Services.Count]}");
+            foreach (var (service, index) in WebManager.Services.Select((s, i) => (s, i + 1)))
+            {
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.service_entry",
+                   index, service.Name, service.Amount, service.Unit, service.PlanValue / (float)100, WebManager.CurrencyName, service.SmsCost]}");
+            }
 
-        for (int i = 0; i < WebManager.Services.Count; i++)
-        {
-            var service = WebManager.Services[i];
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.service_entry",
-               i + 1, service.Name, service.Count, service.Unit, service.PlanValue / (float)100, WebManager.CurrencyName, service.SmsCodeValue]}");
-        }
-
-        commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
-        commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
+            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+        });
     }
 
     [ConsoleCommand("css_kupsrodkami", "Buys service via wallet money")]
     public void OnBuyWalletCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player))
+        HandlePlayerCommand(player, commandInfo, () =>
         {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.invalid"]}");
-            return;
-        }
 
-        if (!PlayerCache.ContainsKey(player!))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.no_data"]}");
-            Logger.LogWarning($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) tried to use command without data");
-            return;
-        }
-
-        if (!WebManager!.IsAvailable)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
-            return;
-        }
-
-        if (commandInfo.ArgCount < 1)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
-            return;
-        }
-
-        string planIDString = commandInfo.GetArg(1);
-
-        if (!int.TryParse(planIDString, out int planID))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
-            return;
-        }
-
-
-        var steamId64 = player!.AuthorizedSteamID!.SteamId64;
-        ServiceSmsData? data = WebManager!.GetService(planID);
-
-        if (data == null)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
-            return;
-        }
-
-        string playerIP = player!.IpAddress!.Split(':')[0];
-        string playerName = player.PlayerName;
-
-        Task.Run(async () =>
-        {
-            string smsCode = "";
-            bool success = await WebManager!.RegisterServiceBuy(steamId64, data.PlanCode, smsCode, playerIP, playerName);
-
-            if (success)
+            if (!WebManager!.IsAvailable)
             {
-                Server.NextFrame(() =>
-                {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Count, data.Unit]}");
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+                return;
+            }
 
-                    Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanCode})");
+            if (commandInfo.ArgCount == 1 && int.TryParse(commandInfo.GetArg(1), out int planID))
+            {
+                var steamId64 = player!.AuthorizedSteamID!.SteamId64;
+                ServicePlanData? data = WebManager!.GetService(planID);
+
+                if (data == null)
+                {
+                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
+                    return;
+                }
+
+                string playerIP = player!.IpAddress!.Split(':')[0];
+                string playerName = player.PlayerName;
+                string smsCode = "";
+                Task.Run(async () =>
+                {
+                    bool success = await WebManager!.RegisterServiceBuy(steamId64, data.PlanUniqueCode, smsCode, playerIP, playerName);
+
+                    if (success)
+                    {
+                        Server.NextFrame(() =>
+                        {
+                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
+
+                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
+                        });
+                    }
+                    else
+                    {
+                        Server.NextFrame(() =>
+                        {
+                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
+
+                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanUniqueCode}) with: planID={planID} and smsCode={smsCode}");
+                        });
+                    }
                 });
+
+
             }
             else
             {
-                Server.NextFrame(() =>
-                {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
-
-                    Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanCode}) with: planID={planID} and smsCode={smsCode}");
-                });
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
             }
         });
 
@@ -159,62 +123,111 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     [ConsoleCommand("css_kupsms", "")]
     public void OnShopBuyCommmand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Player.IsValid(player))
+        HandlePlayerCommand(player, commandInfo, () =>
         {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.invalid"]}");
-            return;
-        }
 
-        if (!PlayerCache.ContainsKey(player!))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.no_data"]}");
-            Logger.LogWarning($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) tried to use command without data");
-            return;
-        }
+            if (!WebManager!.IsAvailable)
+            {
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+                return;
+            }
 
-        if (!WebManager!.IsAvailable)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
-            return;
-        }
+            if (commandInfo.ArgCount == 1 && int.TryParse(commandInfo.GetArg(1), out int planId))
+            {
+                ServicePlanData? service = WebManager!.GetService(planId);
+                if (service == null)
+                {
+                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+                    return;
+                }
 
-        if (commandInfo.ArgCount < 1)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
-            return;
-        }
+                string instruction = $"{PluginChatPrefix}{Localizer["kupsms.instructions",
+                               service.Name, service.Amount, service.Unit, service.SmsMessage, service.SmsNumber, service.SmsCost, planId]}";
 
-        string planIdString = commandInfo.GetArg(1);
-        if (!int.TryParse(planIdString, out int planId))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
-            return;
-        }
+                List<string> lines = GetLines(instruction);
 
-        ServiceSmsData? service = WebManager!.GetService(planId);
-        if (service == null)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
-            return;
-        }
+                foreach (var line in lines)
+                {
+                    commandInfo.ReplyToCommand(line);
+                }
 
-        string instruction = $"{PluginChatPrefix}{Localizer["kupsms.instructions",
-                       service.Name, service.Count, service.Unit, service.SmsMessage, service.SmsNumber, service.SmsCodeValue, planId]}";
 
-        List<string> lines = GetLines(instruction);
+            }
+            else
+            {
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+            }
 
-        foreach (var line in lines)
-        {
-            commandInfo.ReplyToCommand(line);
-        }
+
+        });
     }
-
 
 
 
 
     [ConsoleCommand("css_kodsms", "Buys service via sms")]
     public void OnBuySmsCommand(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        HandlePlayerCommand(player, commandInfo, () =>
+        {
+
+            if (!WebManager!.IsAvailable)
+            {
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+                return;
+            }
+
+            if (commandInfo.ArgCount == 2 && int.TryParse(commandInfo.GetArg(1), out int planID))
+            {
+                string smsCode = commandInfo.GetArg(2);
+
+                var steamId64 = player!.AuthorizedSteamID!.SteamId64;
+                ServicePlanData? data = WebManager!.GetService(planID);
+
+                if (smsCode == "" || data == null)
+                {
+                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
+                    return;
+                }
+
+                string playerIP = player!.IpAddress!.Split(':')[0];
+                string playerName = player.PlayerName;
+
+                Task.Run(async () =>
+                {
+
+                    bool success = await WebManager!.RegisterServiceBuy(steamId64, data.PlanUniqueCode, smsCode, playerIP, playerName);
+
+                    if (success)
+                    {
+                        Server.NextFrame(() =>
+                        {
+                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
+                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
+                        });
+                    }
+                    else
+                    {
+                        Server.NextFrame(() =>
+                        {
+                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
+                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanUniqueCode}) with: planID={planID} and smsCode={smsCode}");
+                        });
+                    }
+                });
+
+            }
+            else
+            {
+
+                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
+            }
+        });
+    }
+
+
+
+    private void HandlePlayerCommand(CCSPlayerController? player, CommandInfo commandInfo, Action action)
     {
         if (!Player.IsValid(player))
         {
@@ -225,69 +238,11 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         if (!PlayerCache.ContainsKey(player!))
         {
             commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.no_data"]}");
-            Logger.LogWarning($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) tried to use command without data");
             return;
         }
 
-        if (!WebManager!.IsAvailable)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
-            return;
-        }
-
-        if (commandInfo.ArgCount < 2)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
-            return;
-        }
-
-        string planIDString = commandInfo.GetArg(1);
-
-        if (!int.TryParse(planIDString, out int planID))
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
-            return;
-        }
-
-        string smsCode = commandInfo.GetArg(2);
-
-        var steamId64 = player!.AuthorizedSteamID!.SteamId64;
-        ServiceSmsData? data = WebManager!.GetService(planID);
-
-        if (smsCode == "" || data == null)
-        {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
-            return;
-        }
-
-        string playerIP = player!.IpAddress!.Split(':')[0];
-        string playerName = player.PlayerName;
-
-        Task.Run(async () =>
-        {
-
-            bool success = await WebManager!.RegisterServiceBuy(steamId64, data.PlanCode, smsCode, playerIP, playerName);
-            // IF smsCode is empty then player money in walllet is used
-            if (success)
-            {
-                Server.NextFrame(() =>
-                {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Count, data.Unit]}");
-
-                    Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanCode})");
-                });
-            }
-            else
-            {
-                Server.NextFrame(() =>
-                {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
-
-                    Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanCode}) with: planID={planID} and smsCode={smsCode}");
-                });
-            }
-        });
-
+        action.Invoke();
     }
 }
+
 

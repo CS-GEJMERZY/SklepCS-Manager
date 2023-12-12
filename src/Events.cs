@@ -26,7 +26,7 @@ public partial class SklepcsManagerPlugin
             await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
             Server.NextFrame(() =>
             {
-                PlayerCache[player].LoadPermissions(player, PermissionManager!);
+                PlayerCache[player].AssignPermissions(player, PermissionManager!);
             });
         });
 
