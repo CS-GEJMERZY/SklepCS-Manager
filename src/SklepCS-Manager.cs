@@ -42,7 +42,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public override void Load(bool hotReload)
     {
-        if(Config.Sklepcs.WebFeaturesEnabled)
+        if (Config.Sklepcs.WebFeaturesEnabled)
         {
             Task.Run(async () =>
             {
@@ -55,7 +55,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 {
                     Server.NextFrame(() =>
                     {
-                        Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
+                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                        {
+                            Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
+                        }
                     });
                 }
 
@@ -63,8 +66,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 {
                     Server.NextFrame(() =>
                     {
-                        Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
-
+                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                        {
+                            Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
+                        }
                     });
                 }
             });

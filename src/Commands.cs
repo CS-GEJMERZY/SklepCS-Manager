@@ -96,7 +96,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         {
                             commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
 
-                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
+                            if(Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseSuccess)) {
+                                Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
+                            }
+                            
                         });
                     }
                     else
@@ -105,7 +108,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         {
                             commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
 
-                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanUniqueCode}) with: planID={planID} and smsCode={smsCode}");
+                            if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseErrors))
+                            {
+                                Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanUniqueCode}) with: planID={planID} and using SklepCS money");
+                            }
                         });
                     }
                 });
@@ -201,7 +207,12 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         Server.NextFrame(() =>
                         {
                             commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
-                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
+
+                            if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseSuccess))
+                            {
+                                Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
+                            }
+
                         });
                     }
                     else
@@ -209,7 +220,11 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         Server.NextFrame(() =>
                         {
                             commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
-                            Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanUniqueCode}) with: planID={planID} and smsCode={smsCode}");
+
+                            if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseErrors))
+                            {
+                                Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) failed to buy service {data.Name}({data.PlanUniqueCode}) with: planID={planID} and smsCode={smsCode}");
+                            }
                         });
                     }
                 });
