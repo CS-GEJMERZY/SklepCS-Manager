@@ -1,8 +1,12 @@
 # SklepCS-Manager
 
 ## Description
-SklepCS Manager is a plugin designed to integrate with https://sklepcs.pl/. Its primary functionality involves assigning CSS permissions to players based on their flags retrieved from the services database.
+SklepCS Manager is a plugin designed to integrate with https://sklepcs.pl/. 
 
+## Features
+- Permission management from the database
+- Main SMS shop features:
+  - Purchasing a plan via SMS
 ## Dependencies
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 - [Metamod:Source](https://www.sourcemm.net/downloads.php/?branch=master)
@@ -15,4 +19,8 @@ SklepCS Manager is a plugin designed to integrate with https://sklepcs.pl/. Its 
 Upon the first launch, the _**SklepCS-Manager.json**_  file will be automatically created in **_csgo/addons/counterstrikesharp/configs/plugins/SklepCS-Manager**
 
 ## Commands
-- **css_shop**__, - **css_sklep**__ - Lists the active services
+- **!uslugi**: Displays a list of all active services for a player.
+- **!sklepsms**: Opens the main shop menu.
+- **!kupsrodkami**: Allows the player to purchase services using wallet money.
+- **!kupsms**: Shows information about sending an SMS code.
+- **!kodsms**: Receiving services by using an SMS code.

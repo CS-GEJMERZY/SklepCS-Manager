@@ -1,9 +1,11 @@
 ﻿using System.Text;
+
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace SklepCSManager;
 
@@ -12,26 +14,60 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 {
     public override string ModuleName => "SklepCS Manager Plugin";
     public override string ModuleAuthor => "Hacker";
-    public override string ModuleVersion => "0.0.1";
+    public override string ModuleVersion => "1.0.0";
+    public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
     public PluginConfig Config { get; set; }
 
-    internal SklepcsDatabaseManager? DatabaseManager;
-    internal SklepcsPermissionManager? PermissionManager;
+    internal DatabaseManager? DatabaseManager;
+    internal PermissionManager? PermissionManager;
+    internal SklepcsWebManager? WebManager;
 
 
     internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
+
+    public string PluginChatPrefix { get; set; } = " DefaultPrefix";
 
     public void OnConfigParsed(PluginConfig config)
     {
         Config = config;
 
-        DatabaseManager = new SklepcsDatabaseManager(Config.Settings.Database);
-        PermissionManager = new SklepcsPermissionManager(Config.PermissionGroups);
+        DatabaseManager = new DatabaseManager(Config.Settings.Database);
+        PermissionManager = new PermissionManager(Config.PermissionGroups);
+        WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
+
+
+        PluginChatPrefix = Config.Settings.Prefix;
+        PreparePluginPrefix();
     }
 
     public override void Load(bool hotReload)
     {
+        Task.Run(async () =>
+        {
+            bool webServices = await WebManager!.LoadWebServices();
+
+            await Task.Delay(500);
+            bool settings = await WebManager!.LoadWebSettings();
+
+            if (!webServices)
+            {
+                Server.NextFrame(() =>
+                {
+                    Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
+                });
+            }
+
+            if (!settings)
+            {
+                Server.NextFrame(() =>
+                {
+                    Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
+
+                });
+            }
+        });
+
         Console.WriteLine("SklepCS Plugin loaded. ");
 
         RegisterListener<Listeners.OnClientDisconnect>((slot) => { OnClientDisconnect(slot); });
@@ -44,13 +80,15 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 {
                     PlayerCache.Add(player, new Player());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
+                    var steamId64 = player.AuthorizedSteamID.SteamId64;
                     Task.Run(async () =>
                     {
-                        await PlayerCache[player].LoadDatabaseData(steamId2, Config.Settings.ServerTag, DatabaseManager!);
+                        await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+                        await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
 
                         Server.NextFrame(() =>
                         {
-                            PlayerCache[player].LoadPermissions(player, PermissionManager!);
+                            PlayerCache[player].AssignPermissions(player, PermissionManager!);
                         });
                     });
                 }

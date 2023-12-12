@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-
+namespace SklepCSManager;
 public class SklepcsPermission
 {
 

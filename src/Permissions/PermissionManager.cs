@@ -1,18 +1,20 @@
-﻿public class SklepcsPermissionManager
+﻿namespace SklepCSManager;
+
+public class PermissionManager
 {
     public List<SklepcsPermission> Permissions { get; }
 
-    public SklepcsPermissionManager(List<SklepcsPermission> permissionsConfig)
+    public PermissionManager(List<SklepcsPermission> permissionsConfig)
     {
         Permissions = permissionsConfig;
     }
 
-    public List<string> FetchPermissions(List<PlayerConnectionData> playerConnectionData)
+    public List<string> FetchPermissions(List<PlayerDatabaseData> playerConnectionData)
     {
         List<string> matchedPermissions = new();
         HashSet<char> rawPlayerFlags = new();
 
-        foreach (PlayerConnectionData connectionData in playerConnectionData)
+        foreach (PlayerDatabaseData connectionData in playerConnectionData)
         {
             foreach (char c in connectionData.Flags)
             {

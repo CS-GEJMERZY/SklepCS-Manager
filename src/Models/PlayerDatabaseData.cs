@@ -1,4 +1,6 @@
-﻿public class PlayerConnectionData
+﻿namespace SklepCSManager;
+
+public class PlayerDatabaseData
 {
     public string AuthType { get; set; } = string.Empty;
     public string Flags { get; set; } = string.Empty;

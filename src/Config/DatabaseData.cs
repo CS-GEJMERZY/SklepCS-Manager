@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace SklepCSManager;
 public class DatabaseData
 {
     [JsonPropertyName("DBHostname")]

@@ -19,13 +19,14 @@ public partial class SklepcsManagerPlugin
 
         if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Player()); }
         var steamId2 = player.AuthorizedSteamID.SteamId2;
+        var steamId64 = player.AuthorizedSteamID.SteamId64;
         Task.Run(async () =>
         {
-            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Settings.ServerTag, DatabaseManager!);
-
+            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+            await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
             Server.NextFrame(() =>
             {
-                PlayerCache[player].LoadPermissions(player, PermissionManager!);
+                PlayerCache[player].AssignPermissions(player, PermissionManager!);
             });
         });
 

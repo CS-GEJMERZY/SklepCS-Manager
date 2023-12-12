@@ -1,0 +1,22 @@
+{
+    "player.invalid" : "",
+    "player.no_data" : "",
+    "services.no_services" : "{red}Aktualnie ma żadnych dostępnych usług do zakupu.",
+
+    "uslugi.your_services" : "{blue}Twoje aktywne usługi:",
+    "uslugi.entry" : "{darkred}#{0} {yellow}Koniec: {1}",
+    "uslugi.datetime_format" : "yyyy-MM-dd HH:mm:ss",
+
+    "sklepsms.shop_www" : "Sklep www: {darkred}{0}",
+    "sklepsms.shop_money" : "Dostępne środki: {gold} {0} {1}",
+    "sklepsms.available" : "{purple}Dostępne usługi({0}):",
+    "sklepsms.service_entry" : "{darkred}#{0} {yellow}{1} {darkred}{2} {3} za {4} {5} | {6} zł SMS",
+
+    "sklepsms.how_to_buy_wallet" : "{purple}Aby zakupić usługę środkami z portfela, wpisz {gold}!kupsrodkami <numer usługi>",
+    "sklepsms.how_to_buy_sms" : "{purple}Aby zakupić usługę poprzez SMS, wpisz {gold}!kupsms <numer usługi> {green} i postępuj zgodnie z instrukcjami.",
+    
+    "kupsms.instructions" : "Aby kupić {0} na {1} {2}, wyślij\n{default}Sms o treści: {gold}{3}\n{default}Na numer: {gold}{4}\n{default}Koszt SMS: {gold}{5}\n{lightred}A następnie użyj komendy: {green}!kodsms {6} <kodsms>",
+    "kodsms.syntax" : "Użycie: !kodsms <numer usługi> <kodsms>",
+    "services.buy_success" : "Usługa {green}{0} na {1} {2} {default}została pomyślnie zakupiona.",
+    "services.buy_failed" : "{darkred}Wystąpił błąd podczas zakupu usługi. Upewnij się, że wprowadzony kodsms jest prawidłowy lub masz odpowiednią ilość środków w portfelu."
+}
