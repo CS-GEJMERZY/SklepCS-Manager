@@ -23,7 +23,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     internal PermissionManager? PermissionManager;
     internal SklepcsWebManager? WebManager;
 
-
     internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
 
     public string PluginChatPrefix { get; set; } = " DefaultPrefix";
@@ -43,30 +42,33 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public override void Load(bool hotReload)
     {
-        Task.Run(async () =>
+        if(Config.Sklepcs.WebFeaturesEnabled)
         {
-            bool webServices = await WebManager!.LoadWebServices();
-
-            await Task.Delay(500);
-            bool settings = await WebManager!.LoadWebSettings();
-
-            if (!webServices)
+            Task.Run(async () =>
             {
-                Server.NextFrame(() =>
-                {
-                    Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
-                });
-            }
+                bool webServices = await WebManager!.LoadWebServices();
 
-            if (!settings)
-            {
-                Server.NextFrame(() =>
-                {
-                    Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
+                await Task.Delay(500);
+                bool settings = await WebManager!.LoadWebSettings();
 
-                });
-            }
-        });
+                if (!webServices)
+                {
+                    Server.NextFrame(() =>
+                    {
+                        Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
+                    });
+                }
+
+                if (!settings)
+                {
+                    Server.NextFrame(() =>
+                    {
+                        Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
+
+                    });
+                }
+            });
+        }
 
         Console.WriteLine("SklepCS Plugin loaded. ");
 
