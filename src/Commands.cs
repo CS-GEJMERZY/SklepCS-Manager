@@ -17,13 +17,13 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         {
             if (PlayerCache[player!].ConnectionData.Count > 0)
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["uslugi.your_services"]}");
+              player!.PrintToChat($"{PluginChatPrefix}{Localizer["uslugi.your_services"]}");
                 for (int i = 0; i < PlayerCache[player!].ConnectionData.Count; i++)
                 {
                     DateTime dateTime = PlayerCache[player!].ConnectionData[i].End;
                     string formatedTime = dateTime.ToString(Localizer["uslugi.datetime_format"]);
 
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["uslugi.entry", i + 1, formatedTime]}");
+                   player!.PrintToChat($"{PluginChatPrefix}{Localizer["uslugi.entry", i + 1, formatedTime]}");
                 }
             }
         });
@@ -37,26 +37,26 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
             if (!WebManager!.IsAvailable)
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+               player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.no_services"]}");
                 return;
             }
 
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.shop_www", Config.Sklepcs.WebsiteURL]}");
+           player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.shop_www", Config.Sklepcs.WebsiteURL]}");
             if (!PlayerCache[player!].IsLoadedSklepcs)
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.shop_money", PlayerCache[player!].SklepcsMoney, WebManager.CurrencyName]}");
+               player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.shop_money", PlayerCache[player!].SklepcsMoney, WebManager.CurrencyName]}");
             }
 
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.available", WebManager.Services.Count]}");
+           player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.available", WebManager.Services.Count]}");
 
             foreach (var (service, index) in WebManager.Services.Select((s, i) => (s, i + 1)))
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.service_entry",
+               player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.service_entry",
                    index, service.Name, service.Amount, service.Unit, service.PlanValue / (float)100, WebManager.CurrencyName, service.SmsCost]}");
             }
 
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+           player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
+           player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
         });
     }
 
@@ -68,7 +68,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
             if (!WebManager!.IsAvailable)
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+               player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.no_services"]}");
                 return;
             }
 
@@ -79,7 +79,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
                 if (data == null)
                 {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
+                   player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
                     return;
                 }
 
@@ -94,7 +94,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     {
                         Server.NextFrame(() =>
                         {
-                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
+                           player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
 
                             if(Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseSuccess)) {
                                 Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
@@ -106,7 +106,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     {
                         Server.NextFrame(() =>
                         {
-                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
+                           player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
 
                             if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseErrors))
                             {
@@ -120,7 +120,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             }
             else
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
+               player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_wallet"]}");
             }
         });
 
@@ -134,7 +134,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
             if (!WebManager!.IsAvailable)
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+              player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.no_services"]}");
                 return;
             }
 
@@ -143,7 +143,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 ServicePlanData? service = WebManager!.GetService(planId);
                 if (service == null)
                 {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+                  player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
                     return;
                 }
 
@@ -154,14 +154,14 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
                 foreach (var line in lines)
                 {
-                    commandInfo.ReplyToCommand(line);
+                  player!.PrintToChat(line);
                 }
 
 
             }
             else
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
+              player!.PrintToChat($"{PluginChatPrefix}{Localizer["sklepsms.how_to_buy_sms"]}");
             }
 
 
@@ -177,7 +177,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
             if (!WebManager!.IsAvailable)
             {
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.no_services"]}");
+              player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.no_services"]}");
                 return;
             }
 
@@ -190,7 +190,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
                 if (smsCode == "" || data == null)
                 {
-                    commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
+                  player!.PrintToChat($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
                     return;
                 }
 
@@ -206,7 +206,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     {
                         Server.NextFrame(() =>
                         {
-                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
+                          player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.buy_success", data.Name, data.Amount, data.Unit]}");
 
                             if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseSuccess))
                             {
@@ -219,7 +219,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     {
                         Server.NextFrame(() =>
                         {
-                            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
+                          player!.PrintToChat($"{PluginChatPrefix}{Localizer["services.buy_failed"]}");
 
                             if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.PurchaseErrors))
                             {
@@ -233,7 +233,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             else
             {
 
-                commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
+              player!.PrintToChat($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
             }
         });
     }
@@ -243,13 +243,13 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     {
         if (!Player.IsValid(player))
         {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.invalid"]}");
+          player!.PrintToChat($"{PluginChatPrefix}{Localizer["player.invalid"]}");
             return;
         }
 
         if (!PlayerCache.ContainsKey(player!))
         {
-            commandInfo.ReplyToCommand($"{PluginChatPrefix}{Localizer["player.no_data"]}");
+          player!.PrintToChat($"{PluginChatPrefix}{Localizer["player.no_data"]}");
             return;
         }
 
