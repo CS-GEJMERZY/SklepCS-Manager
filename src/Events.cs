@@ -1,6 +1,5 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Entities;
 
 namespace SklepCSManager;
@@ -30,7 +29,7 @@ public partial class SklepcsManagerPlugin
             });
         });
 
-   
+
     }
 
     private void OnClientDisconnect(int playerSlot)
@@ -41,8 +40,8 @@ public partial class SklepcsManagerPlugin
         {
             return;
         }
-           
-        if(PlayerCache.ContainsKey(player))
+
+        if (PlayerCache.ContainsKey(player))
         {
             PlayerCache.Remove(player);
         }

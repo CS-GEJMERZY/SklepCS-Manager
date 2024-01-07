@@ -88,7 +88,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             });
         }
 
-      
+
         if (hotReload)
         {
             foreach (var player in Utilities.GetPlayers())

@@ -3,7 +3,7 @@ namespace SklepCSManager;
 public class SettingsData
 {
     [JsonPropertyName("Prefix")]
-    public string Prefix { get; set; } = " {red}[Sklepsms] ";
+    public string Prefix { get; set; } = " {gold}[Sklepsms] ";
 
     [JsonPropertyName("LoggingLevel")]
     public uint LoggingLevel { get; set; } = (uint)(LoggingLevelData.PurchaseSuccess | LoggingLevelData.PurchaseErrors);
