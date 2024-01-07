@@ -1,6 +1,6 @@
 {
-    "player.invalid" : "",
-    "player.no_data" : "",
+    "player.invalid" : "Nie załadowano poprawnie SteamID gracza.",
+    "player.no_data" : "Nie załadowano poprawnie gracza w Pluginie.",
     "services.no_services" : "{red}Aktualnie ma żadnych dostępnych usług do zakupu.",
 
     "uslugi.your_services" : "{blue}Twoje aktywne usługi:",

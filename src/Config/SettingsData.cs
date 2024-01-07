@@ -11,7 +11,8 @@ public class SettingsData
     [JsonPropertyName("Database")]
     public DatabaseData Database { get; set; } = new DatabaseData();
 
-    public bool IsLoggingLevelEnabled(LoggingLevelData level) { 
+    public bool IsLoggingLevelEnabled(LoggingLevelData level)
+    {
         return (LoggingLevel & (uint)level) != 0;
     }
 }

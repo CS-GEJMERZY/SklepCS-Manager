@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using Microsoft.Extensions.Logging;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace SklepCSManager;
 
@@ -42,43 +43,52 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public override void Load(bool hotReload)
     {
+        RegisterListener<OnClientAuthorized>(OnClientAuthorized);
+        RegisterListener<OnClientDisconnect>(OnClientDisconnect);
+        Console.WriteLine("SklepCS Plugin loaded. ");
+
+
         if (Config.Sklepcs.WebFeaturesEnabled)
         {
             Task.Run(async () =>
             {
                 bool webServices = await WebManager!.LoadWebServices();
 
-                await Task.Delay(500);
+
                 bool settings = await WebManager!.LoadWebSettings();
 
-                if (!webServices)
+                Server.NextFrame(() =>
                 {
-                    Server.NextFrame(() =>
+                    if (webServices)
+                    {
+                        Server.PrintToConsole("Web services loaded.");
+                    }
+                    else
                     {
                         if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
                         {
                             Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
                         }
-                    });
-                }
+                    }
 
-                if (!settings)
-                {
-                    Server.NextFrame(() =>
+                    if (settings)
+                    {
+                        Server.PrintToConsole("Web settings loaded.");
+                    }
+                    else
                     {
                         if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
                         {
                             Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
                         }
-                    });
-                }
+                    }
+                });
+
+
             });
         }
 
-        Console.WriteLine("SklepCS Plugin loaded. ");
-
-        RegisterListener<Listeners.OnClientDisconnect>((slot) => { OnClientDisconnect(slot); });
-
+      
         if (hotReload)
         {
             foreach (var player in Utilities.GetPlayers())
@@ -109,17 +119,17 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     {
         if (player == null || !PlayerCache.ContainsKey(player))
         {
-            commandInfo.ReplyToCommand("Invalid player.");
+            player!.PrintToChat($"{PluginChatPrefix}{Localizer["player.invalid"]}");
             return;
         }
 
-        commandInfo.ReplyToCommand("Listing flags loaded from database: ");
+        player!.PrintToChat("Listing flags loaded from database: ");
         foreach (var data in PlayerCache[player].ConnectionData)
         {
-            commandInfo.ReplyToCommand($"{data.Flags}");
+            player!.PrintToChat($"{data.Flags}");
         }
 
-        commandInfo.ReplyToCommand("Listing permissions loaded from config: ");
+        player!.PrintToChat("Listing permissions loaded from config: ");
         foreach (var data in Config.PermissionGroups)
         {
             var stringBuilder = new StringBuilder();
@@ -134,16 +144,16 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
         var fetchedPermissions = PermissionManager!.FetchPermissions(PlayerCache[player].ConnectionData);
 
-        commandInfo.ReplyToCommand("Listing permissions that should be added: ");
+        player!.PrintToChat("Listing permissions that should be added: ");
         foreach (var permission in fetchedPermissions)
         {
-            commandInfo.ReplyToCommand($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
+            player!.PrintToChat($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
         }
 
-        commandInfo.ReplyToCommand("Listing added permissions: ");
+        player!.PrintToChat("Listing added permissions: ");
         foreach (var permission in PlayerCache[player].AddedPermissions)
         {
-            commandInfo.ReplyToCommand($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
+            player!.PrintToChat($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
         }
     }
 }

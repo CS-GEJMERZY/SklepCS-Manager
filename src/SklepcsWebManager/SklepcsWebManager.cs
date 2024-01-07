@@ -21,7 +21,6 @@ public class SklepcsWebManager
     private string _lastException { get; set; }
 
 
-
     public List<ServicePlanData> Services { get; set; } = new List<ServicePlanData>();
 
     private bool _servicesLoaded = false;
