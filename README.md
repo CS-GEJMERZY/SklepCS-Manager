@@ -8,7 +8,7 @@ SklepCS Manager is a plugin designed to integrate with https://sklepcs.pl/.
 - Main SMS shop features:
   - Purchasing a plan via SMS
 ## Dependencies
-- [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases) v121
+- [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/releases) v142
 - [Metamod:Source](https://www.sourcemm.net/downloads.php/?branch=master)
 
 ## Instalation
