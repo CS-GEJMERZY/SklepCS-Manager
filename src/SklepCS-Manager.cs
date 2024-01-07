@@ -43,7 +43,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public override void Load(bool hotReload)
     {
-        RegisterListener<OnClientAuthorized>(OnClientAuthorized);
         RegisterListener<OnClientDisconnect>(OnClientDisconnect);
         Console.WriteLine("SklepCS Plugin loaded. ");
 

@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Entities;
 
 namespace SklepCSManager;
@@ -7,13 +8,13 @@ namespace SklepCSManager;
 
 public partial class SklepcsManagerPlugin
 {
-    private void OnClientAuthorized(int playerSlot, SteamID steamID)
+    [GameEventHandler]
+    public HookResult EventPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
     {
-        CCSPlayerController? player = Utilities.GetPlayerFromSlot(playerSlot);
-
+        CCSPlayerController player = @event.Userid;
         if (player == null || !player.IsValid || player.IsBot || player.IsHLTV || player.AuthorizedSteamID == null)
         {
-            return;
+            return HookResult.Continue;
         }
 
         if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Player()); }
@@ -29,7 +30,7 @@ public partial class SklepcsManagerPlugin
             });
         });
 
-
+        return HookResult.Continue;
     }
 
     private void OnClientDisconnect(int playerSlot)
