@@ -1,22 +1,22 @@
-﻿{
-    "player.invalid": "Player SteamID not loaded correctly.",
-  "player.no_data": "Player not loaded correctly in the plugin.",
-  "services.no_services": "{red}Currently has no available services for purchase.",
+{
+    "player.invalid": "Player's SteamID was not loaded correctly.",
+    "player.no_data": "Player data was not loaded correctly in the Plugin.",
+    "services.no_services": "{red}Currently no services available for purchase.",
 
-  "uslugi.your_services": "{blue}Your active services:",
-  "uslugi.entry": "{darkred}#{0} {yellow}End: {1}",
-  "uslugi.datetime_format": "yyyy-MM-dd HH:mm:ss",
+    "uslugi.your_services": "{blue}Your active services:",
+    "uslugi.entry": "{darkred}#{0} {yellow}End: {1}",
+    "uslugi.datetime_format": "yyyy-MM-dd HH:mm:ss",
 
-  "sklepsms.shop_www": "Online shop: {darkred}{0}",
-  "sklepsms.shop_money": "Available funds: {gold} {0} {1}",
-  "sklepsms.available": "{purple}Available services ({0}):",
-  "sklepsms.service_entry": "{darkred}#{0} {yellow}{1} {darkred}{2} {3} for {4} {5} | {6} PLN SMS",
+    "sklepsms.shop_www": "Webshop: {darkred}{0}",
+    "sklepsms.shop_money": "Available funds: {gold} {0} {1}",
+    "sklepsms.available": "{purple}Available services({0}):",
+    "sklepsms.service_entry": "{darkred}#{0} {yellow}{1} {darkred}{2} {3} for {4} {5} | {6} zł SMS",
 
-  "sklepsms.how_to_buy_wallet": "{purple}To purchase a service with wallet funds, type {gold}!buywithwallet <service number>",
-  "sklepsms.how_to_buy_sms": "{purple}To purchase a service via SMS, type {gold}!buysms <service number> {green} and follow the instructions.",
+    "sklepsms.how_to_buy_wallet": "{purple}To purchase a service with wallet funds, type {gold}!buywithwallet <service number>",
+    "sklepsms.how_to_buy_sms": "{purple}To purchase a service via SMS, type {gold}!buysms <service number> {green} and follow the instructions.",
 
-  "buysms.instructions": "To buy {0} on {1} {2}, send\n{default}SMS with content: {gold}{3}\n{default}To number: {gold}{4}\n{default}SMS cost: {gold}{5}\n{lightred}Then use the command: {green}!smscode {6} <smscode>",
-    "smscode.syntax": "Usage: !smscode <service number> <smscode>",
-    "services.buy_success": "Service {green}{0} on {1} {2} {default}has been successfully purchased.",
-    "services.buy_failed": "{darkred}An error occurred during the service purchase. Make sure the entered SMS code is correct or you have sufficient funds in your wallet."
+    "kupsms.instructions": "To buy {0} for {1} {2}, send\n{default}SMS with text: {gold}{3}\n{default}To number: {gold}{4}\n{default}SMS cost: {gold}{5}\n{lightred}Then use command: {green}!smscode {6} <sms code>",
+    "kodsms.syntax": "Usage: !smscode <service number> <sms code>",
+    "services.buy_success": "Service {green}{0} for {1} {2} {default}has been successfully purchased.",
+    "services.buy_failed": "{darkred}An error occurred while purchasing the service. Make sure the entered SMS code is correct or you have sufficient funds in your wallet."
 }
