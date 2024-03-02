@@ -1,15 +1,12 @@
 # SklepCS-Manager
-
 This plugin integrates your CS2 server with SklepCS (https://sklepcs.pl/).
 
 **Key Features**
-
 * Automatic player permission synchronization
 * Purchase via SklepCS wallet or SMS
 
 **Dependencies**
-
-* CounterStrikeSharp v159
+* CounterStrikeSharp v178
 * Metamod:Source
 
 **Installation**
@@ -20,3 +17,5 @@ This plugin integrates your CS2 server with SklepCS (https://sklepcs.pl/).
 **More Information**
 
 Full documentation in English and Polish is available in the dedicated wiki.
+- [PL](https://github.com/CS-GEJMERZY/SklepCS-Manager/wiki/%5BPL%5D-O-pluginie)
+- [EN](https://github.com/CS-GEJMERZY/SklepCS-Manager/wiki/%5BEN%5D-Plugin-Info)
