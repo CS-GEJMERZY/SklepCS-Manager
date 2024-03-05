@@ -1,10 +1,8 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Entities;
 
-namespace SklepCSManager;
-
+namespace Plugin;
 
 public partial class SklepcsManagerPlugin
 {
@@ -17,7 +15,7 @@ public partial class SklepcsManagerPlugin
             return HookResult.Continue;
         }
 
-        if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Player()); }
+        if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Managers.Player()); }
         var steamId2 = player.AuthorizedSteamID.SteamId2;
         var steamId64 = player.AuthorizedSteamID.SteamId64;
         Task.Run(async () =>

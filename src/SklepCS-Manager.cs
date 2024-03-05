@@ -1,14 +1,9 @@
-﻿using System.Text;
-
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Admin;
-using CounterStrikeSharp.API.Modules.Commands;
 using Microsoft.Extensions.Logging;
 using static CounterStrikeSharp.API.Core.Listeners;
 
-namespace SklepCSManager;
+namespace Plugin;
 
 
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
@@ -18,13 +13,13 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     public override string ModuleVersion => "1.2.0";
     public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
-    public PluginConfig Config { get; set; }
+    public required PluginConfig Config { get; set; }
 
-    internal DatabaseManager? DatabaseManager;
-    internal PermissionManager? PermissionManager;
-    internal SklepcsWebManager? WebManager;
+    internal Managers.DatabaseManager? DatabaseManager;
+    internal Managers.PermissionManager? PermissionManager;
+    internal Managers.SklepcsWebManager? WebManager;
 
-    internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
+    internal Dictionary<CCSPlayerController, Managers.Player> PlayerCache = new();
 
     public string PluginChatPrefix { get; set; } = " DefaultPrefix";
 
@@ -32,9 +27,9 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     {
         Config = config;
 
-        DatabaseManager = new DatabaseManager(Config.Settings.Database);
-        PermissionManager = new PermissionManager(Config.PermissionGroups);
-        WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
+        DatabaseManager = new Managers.DatabaseManager(Config.Settings.Database);
+        PermissionManager = new Managers.PermissionManager(Config.PermissionGroups);
+        WebManager = new Managers.SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
 
 
         PluginChatPrefix = Config.Settings.Prefix;
@@ -64,7 +59,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     }
                     else
                     {
-                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                        if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
                         {
                             Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
                         }
@@ -76,7 +71,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     }
                     else
                     {
-                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                        if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
                         {
                             Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
                         }
@@ -94,7 +89,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             {
                 if (player != null && player.IsValid && !player.IsBot && player.AuthorizedSteamID != null)
                 {
-                    PlayerCache.Add(player, new Player());
+                    PlayerCache.Add(player, new Managers.Player());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
                     var steamId64 = player.AuthorizedSteamID.SteamId64;
                     Task.Run(async () =>
@@ -112,47 +107,5 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         }
     }
 
-    [RequiresPermissions("@css/root")]
-    [ConsoleCommand("css_sklepdebug", "Sklep debug")]
-    public void OnDebugCommand(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null || !PlayerCache.ContainsKey(player))
-        {
-            player!.PrintToChat($"{PluginChatPrefix}{Localizer["player.invalid"]}");
-            return;
-        }
 
-        player!.PrintToChat("Listing flags loaded from database: ");
-        foreach (var data in PlayerCache[player].ConnectionData)
-        {
-            player!.PrintToChat($"{data.Flags}");
-        }
-
-        player!.PrintToChat("Listing permissions loaded from config: ");
-        foreach (var data in Config.PermissionGroups)
-        {
-            var stringBuilder = new StringBuilder();
-            foreach (var perm in data.Permissions)
-            {
-                stringBuilder.Append(perm);
-                stringBuilder.Append(", ");
-            }
-            string perms = stringBuilder.ToString().TrimEnd(',', ' ');
-            commandInfo.ReplyToCommand($"{data.RequiredFlags} | {perms}");
-        }
-
-        var fetchedPermissions = PermissionManager!.FetchPermissions(PlayerCache[player].ConnectionData);
-
-        player!.PrintToChat("Listing permissions that should be added: ");
-        foreach (var permission in fetchedPermissions)
-        {
-            player!.PrintToChat($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
-        }
-
-        player!.PrintToChat("Listing added permissions: ");
-        foreach (var permission in PlayerCache[player].AddedPermissions)
-        {
-            player!.PrintToChat($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
-        }
-    }
 }
