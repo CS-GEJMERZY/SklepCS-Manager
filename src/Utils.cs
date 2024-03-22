@@ -18,7 +18,6 @@ public partial class SklepcsManagerPlugin
         }
     }
 
-
     public List<string> GetLines(string message)
     {
         List<string> result = new();

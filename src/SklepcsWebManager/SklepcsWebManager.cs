@@ -10,39 +10,37 @@ enum SklepcsWebOperation
 public class SklepcsWebManager
 {
     public string CurrencyName { get; set; } = "wPLN";
-    private string _shopWebsite { get; set; } = "sklep.csgejmerzy.pl"; // consider removing this
-    private string _apiKey { get; set; } = "1234567890";
-    private string _apiUrl { get; set; } = "https://sklepcs.pl/";
-    private string _serverId { get; set; } = "1";
-    private int _apiVersion { get; set; } = 142;
+    private string ShopWebsite { get; set; } = "sklep.csgejmerzy.pl"; // consider removing this
+    private string ApiKey { get; set; } = "1234567890";
+    private string ApiUrl { get; set; } = "https://sklepcs.pl/";
+    private string ServerId { get; set; } = "1";
+    private int ApiVersion { get; set; } = 142;
 
-    private string _lastQueryString { get; set; }
-    private string _lastQueryResponse { get; set; }
-    private string _lastException { get; set; }
-
+    private string LastQueryString { get; set; }
+    private string LastQueryResponse { get; set; }
+    private string LastException { get; set; }
 
     public List<ServicePlanData> Services { get; set; } = new List<ServicePlanData>();
 
     private bool _servicesLoaded = false;
     private bool _settingsLoaded = false;
 
-
     public bool IsAvailable => _servicesLoaded && _settingsLoaded && Services.Count > 0;
 
     public SklepcsWebManager(string serverID, string apiKey)
     {
-        _serverId = serverID;
-        _apiKey = apiKey;
+        ServerId = serverID;
+        ApiKey = apiKey;
 
-        _lastQueryString = "";
-        _lastQueryResponse = "";
-        _lastException = "";
+        LastQueryString = "";
+        LastQueryResponse = "";
+        LastException = "";
     }
 
     private async Task<List<string>> QueryServerApisync(SklepcsWebOperation operation, string queryExtraData = "")
     {
-        string apiUrl = $"{_apiUrl}api_server_uslugi.php?api={_apiKey}&serwer={_serverId}&ver={_apiVersion}&operacja={(int)operation}" + queryExtraData;
-        _lastQueryString = apiUrl;
+        string apiUrl = $"{ApiUrl}api_server_uslugi.php?api={ApiKey}&serwer={ServerId}&ver={ApiVersion}&operacja={(int)operation}" + queryExtraData;
+        LastQueryString = apiUrl;
 
         using HttpClient httpClient = new();
         HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
@@ -50,7 +48,7 @@ public class SklepcsWebManager
         if (response.IsSuccessStatusCode)
         {
             string responseData = await response.Content.ReadAsStringAsync();
-            _lastQueryResponse = responseData;
+            LastQueryResponse = responseData;
 
             return BreakQueryLines(responseData);
         }
@@ -73,7 +71,7 @@ public class SklepcsWebManager
         }
         catch (Exception ex)
         {
-            _lastException = ex.Message;
+            LastException = ex.Message;
             return false;
         }
     }
@@ -91,7 +89,7 @@ public class SklepcsWebManager
         }
         catch (Exception ex)
         {
-            _lastException = ex.Message;
+            LastException = ex.Message;
             return false;
         }
     }
@@ -110,14 +108,14 @@ public class SklepcsWebManager
         }
         catch (Exception ex)
         {
-            _lastException = ex.Message;
+            LastException = ex.Message;
             return -1;
         }
     }
 
     public async Task<bool> RegisterServiceBuy(ulong steamId64, string planShortId, string SmsCode, string playerIP, string playerName)
     {
-        string apiUrl = $"{_apiUrl}api_server.php?api={_apiKey}&steam64={steamId64}&tekst={planShortId + '-' + SmsCode}&ip={playerIP}&serwer={_serverId}&ver={_apiVersion}&client={5}&name={playerName}";
+        string apiUrl = $"{ApiUrl}api_server.php?api={ApiKey}&steam64={steamId64}&tekst={planShortId + '-' + SmsCode}&ip={playerIP}&serwer={ServerId}&ver={ApiVersion}&client={5}&name={playerName}";
 
         using HttpClient httpClient = new();
         try
@@ -136,7 +134,7 @@ public class SklepcsWebManager
         }
         catch (Exception ex)
         {
-            _lastException = ex.Message;
+            LastException = ex.Message;
             return false;
         }
     }
@@ -163,7 +161,7 @@ public class SklepcsWebManager
 
     public string GetDebugData()
     {
-        string reponse = $"Last query: {_lastQueryString}\nLast response: {_lastQueryResponse}\nLast exception: {_lastException}";
+        string reponse = $"Last query: {LastQueryString}\nLast response: {LastQueryResponse}\nLast exception: {LastException}";
         return reponse;
     }
 
@@ -197,7 +195,7 @@ public class SklepcsWebManager
     private void ParseSettingsResponse(List<string> responseList)
     {
         CurrencyName = responseList[0];
-        _shopWebsite = responseList[1];
+        ShopWebsite = responseList[1];
     }
 }
 

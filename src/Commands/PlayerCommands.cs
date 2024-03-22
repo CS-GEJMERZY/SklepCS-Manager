@@ -1,5 +1,4 @@
-﻿
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -7,8 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SklepCSManager;
 
-
-public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
+public partial class SklepcsManagerPlugin
 {
     [ConsoleCommand("css_uslugi", "Show players active services")]
     public void OnServicesCommand(CCSPlayerController? player, CommandInfo commandInfo)
@@ -100,7 +98,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                             {
                                 Logger.LogInformation($"{player!.PlayerName}({player!.AuthorizedSteamID!.SteamId64}) bought service {data.Name}({data.PlanUniqueCode})");
                             }
-
                         });
                     }
                     else
@@ -116,8 +113,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         });
                     }
                 });
-
-
             }
             else
             {
@@ -157,8 +152,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                 {
                     player!.PrintToChat(line);
                 }
-
-
             }
             else
             {
@@ -229,11 +222,9 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         });
                     }
                 });
-
             }
             else
             {
-
                 player!.PrintToChat($"{PluginChatPrefix}{Localizer["kodsms.syntax"]}");
             }
         });
@@ -257,5 +248,3 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         action.Invoke();
     }
 }
-
-

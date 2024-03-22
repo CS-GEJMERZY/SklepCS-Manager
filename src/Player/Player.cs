@@ -8,13 +8,13 @@ public class Player
     public List<string> AddedPermissions { get; private set; }
 
     private bool _loadedDatabaseData = false;
-    public bool _loadedSklepcsData { get; set; } = false;
+    public bool LoadedSklepcsData { get; set; } = false;
 
 
     public bool IsLoadedDatabase => _loadedDatabaseData;
-    public bool IsLoadedSklepcs => _loadedSklepcsData;
+    public bool IsLoadedSklepcs => LoadedSklepcsData;
 
-    public bool IsFullyLoaded => _loadedDatabaseData && _loadedSklepcsData;
+    public bool IsFullyLoaded => _loadedDatabaseData && LoadedSklepcsData;
 
     public double SklepcsMoney { get; set; } = 0;
 
@@ -42,14 +42,14 @@ public class Player
 
         if (SklepcsMoney == -1)
         {
-            _loadedSklepcsData = false;
+            LoadedSklepcsData = false;
             return false;
         }
 
         float moneyFloat = (float)money / 100;
         SklepcsMoney = Math.Round(moneyFloat, 2);
 
-        _loadedSklepcsData = true;
+        LoadedSklepcsData = true;
         return true;
     }
 

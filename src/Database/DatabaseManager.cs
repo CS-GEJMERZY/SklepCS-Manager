@@ -4,12 +4,12 @@ using MySqlConnector;
 namespace SklepCSManager;
 public class DatabaseManager
 {
-    private string ConnectionsString = string.Empty;
-    private MySqlConnection Connection;
+    private readonly string ConnectionsString = string.Empty;
+    private readonly MySqlConnection Connection;
 
     public DatabaseManager(DatabaseData databaseConfig)
     {
-        MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
+        MySqlConnectionStringBuilder builder = new()
         {
             Server = databaseConfig.DBHostname,
             Database = databaseConfig.DBDatabase,
@@ -30,7 +30,7 @@ public class DatabaseManager
             throw new Exception("Database is null, but tried to query player data.");
         }
 
-        List<PlayerDatabaseData> playerDataList = new List<PlayerDatabaseData>();
+        List<PlayerDatabaseData> playerDataList = new();
 
         using (var command = new MySqlCommand())
         {
@@ -46,7 +46,7 @@ public class DatabaseManager
                 using var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    PlayerDatabaseData playerData = new PlayerDatabaseData
+                    PlayerDatabaseData playerData = new()
                     {
                         AuthType = reader.GetString("authtype"),
                         Flags = reader.GetString("flags"),
