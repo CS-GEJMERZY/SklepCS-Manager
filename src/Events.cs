@@ -2,7 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 
-namespace SklepCSManager;
+namespace Plugin;
 
 public partial class SklepcsManagerPlugin
 {
@@ -15,19 +15,16 @@ public partial class SklepcsManagerPlugin
             return HookResult.Continue;
         }
 
-        if (!PlayerCache.TryGetValue(player, out Player? playerData)) 
-        { 
-            playerData = new Player(); PlayerCache.Add(player, playerData); 
-        }
+        if (!PlayerCache.ContainsKey(player)) { PlayerCache.Add(player, new Managers.Player()); }
         var steamId2 = player.AuthorizedSteamID.SteamId2;
         var steamId64 = player.AuthorizedSteamID.SteamId64;
         Task.Run(async () =>
         {
-            await playerData.LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
-            await playerData.LoadSklepcsData(steamId64, WebManager!);
+            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+            await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
             Server.NextFrame(() =>
             {
-                playerData.AssignPermissions(player, PermissionManager!);
+                PlayerCache[player].AssignPermissions(player, PermissionManager!);
             });
         });
 
@@ -43,7 +40,10 @@ public partial class SklepcsManagerPlugin
             return;
         }
 
-        PlayerCache.Remove(player);
+        if (PlayerCache.ContainsKey(player))
+        {
+            PlayerCache.Remove(player);
+        }
     }
 }
 

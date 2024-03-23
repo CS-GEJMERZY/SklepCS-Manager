@@ -1,9 +1,11 @@
-﻿namespace SklepCSManager;
-
-public class PlayerDatabaseData
+﻿namespace Plugin.Models
 {
-    public string AuthType { get; set; } = string.Empty;
-    public string Flags { get; set; } = string.Empty;
-    public int Immunity { get; set; } = 0;
-    public DateTime End { get; set; } = DateTime.MinValue;
+    public class PlayerDatabaseData
+    {
+        public string AuthType { get; set; } = string.Empty;
+        public string Flags { get; set; } = string.Empty;
+        public int Immunity { get; set; } = 0;
+        public DateTime End { get; set; } = DateTime.MinValue;
+    }
 }
+

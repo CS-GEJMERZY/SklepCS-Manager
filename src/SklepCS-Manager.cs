@@ -3,7 +3,7 @@ using CounterStrikeSharp.API.Core;
 using Microsoft.Extensions.Logging;
 using static CounterStrikeSharp.API.Core.Listeners;
 
-namespace SklepCSManager;
+namespace Plugin;
 
 
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
@@ -15,11 +15,11 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 
     public required PluginConfig Config { get; set; }
 
-    internal DatabaseManager? DatabaseManager;
-    internal PermissionManager? PermissionManager;
-    internal SklepcsWebManager? WebManager;
+    internal Managers.DatabaseManager? DatabaseManager;
+    internal Managers.PermissionManager? PermissionManager;
+    internal Managers.SklepcsWebManager? WebManager;
 
-    internal Dictionary<CCSPlayerController, Player> PlayerCache = new();
+    internal Dictionary<CCSPlayerController, Managers.Player> PlayerCache = new();
 
     public string PluginChatPrefix { get; set; } = " DefaultPrefix";
 
@@ -27,9 +27,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     {
         Config = config;
 
-        DatabaseManager = new DatabaseManager(Config.Settings.Database);
-        PermissionManager = new PermissionManager(Config.PermissionGroups);
-        WebManager = new SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
+        DatabaseManager = new Managers.DatabaseManager(Config.Settings.Database);
+        PermissionManager = new Managers.PermissionManager(Config.PermissionGroups);
+        WebManager = new Managers.SklepcsWebManager(Config.Sklepcs.ServerTag, Config.Sklepcs.ApiKey);
+
 
         PluginChatPrefix = Config.Settings.Prefix;
         PreparePluginPrefix();
@@ -46,7 +47,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             Task.Run(async () =>
             {
                 bool webServices = await WebManager!.LoadWebServices();
-
                 bool settings = await WebManager!.LoadWebSettings();
 
                 Server.NextFrame(() =>
@@ -57,7 +57,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     }
                     else
                     {
-                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                        if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
                         {
                             Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
                         }
@@ -69,7 +69,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     }
                     else
                     {
-                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                        if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
                         {
                             Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
                         }
@@ -80,13 +80,14 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             });
         }
 
+
         if (hotReload)
         {
             foreach (var player in Utilities.GetPlayers())
             {
                 if (player != null && player.IsValid && !player.IsBot && player.AuthorizedSteamID != null)
                 {
-                    PlayerCache.Add(player, new Player());
+                    PlayerCache.Add(player, new Managers.Player());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
                     var steamId64 = player.AuthorizedSteamID.SteamId64;
                     Task.Run(async () =>
