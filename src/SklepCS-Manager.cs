@@ -78,6 +78,10 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                         }
                     });
                 }
+                catch (Exception ex)
+                {
+                    Server.NextFrame(() => throw ex);
+                }
 
             });
         }
@@ -118,4 +122,4 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 }
 
 
-}
+
