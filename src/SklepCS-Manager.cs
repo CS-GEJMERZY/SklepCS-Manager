@@ -45,37 +45,39 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         {
             Task.Run(async () =>
             {
-                bool webServices = await WebManager!.LoadWebServices();
-
-                bool settings = await WebManager!.LoadWebSettings();
-
-                Server.NextFrame(() =>
+                try
                 {
-                    if (webServices)
-                    {
-                        Server.PrintToConsole("Web services loaded.");
-                    }
-                    else
-                    {
-                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
-                        {
-                            Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
-                        }
-                    }
+                    bool webServices = await WebManager!.LoadWebServices();
 
-                    if (settings)
-                    {
-                        Server.PrintToConsole("Web settings loaded.");
-                    }
-                    else
-                    {
-                        if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
-                        {
-                            Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
-                        }
-                    }
-                });
+                    bool settings = await WebManager!.LoadWebSettings();
 
+                    Server.NextFrame(() =>
+                    {
+                        if (webServices)
+                        {
+                            Server.PrintToConsole("Web services loaded.");
+                        }
+                        else
+                        {
+                            if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                            {
+                                Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
+                            }
+                        }
+
+                        if (settings)
+                        {
+                            Server.PrintToConsole("Web settings loaded.");
+                        }
+                        else
+                        {
+                            if (Config.Settings.IsLoggingLevelEnabled(LoggingLevelData.WebApiErrors))
+                            {
+                                Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
+                            }
+                        }
+                    });
+                }
 
             });
         }
@@ -89,16 +91,27 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     PlayerCache.Add(player, new Player());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
                     var steamId64 = player.AuthorizedSteamID.SteamId64;
-                    Task.Run(async () =>
-                    {
-                        await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
-                        await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
-
-                        Server.NextFrame(() =>
+      
+                        Task.Run(async () =>
                         {
-                            PlayerCache[player].AssignPermissions(player, PermissionManager!);
+                            try
+                            {
+                                await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+                                await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
+                            }
+                            catch (Exception ex)
+                            {
+                                Server.NextFrame(() => throw ex);
+                            }
+
+                            Server.NextFrame(() =>
+                            {
+                                PlayerCache[player].AssignPermissions(player, PermissionManager!);
+                            });
                         });
-                    });
+                    }
+
+
                 }
             }
         }

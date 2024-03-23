@@ -15,16 +15,25 @@ public partial class SklepcsManagerPlugin
             return HookResult.Continue;
         }
 
-        if (!PlayerCache.TryGetValue(player, out Player? playerData)) 
-        { 
-            playerData = new Player(); PlayerCache.Add(player, playerData); 
+        if (!PlayerCache.TryGetValue(player, out Player? playerData))
+        {
+            playerData = new Player();
+            PlayerCache.Add(player, playerData);
         }
         var steamId2 = player.AuthorizedSteamID.SteamId2;
         var steamId64 = player.AuthorizedSteamID.SteamId64;
         Task.Run(async () =>
         {
-            await playerData.LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
-            await playerData.LoadSklepcsData(steamId64, WebManager!);
+            try
+            {
+                await playerData.LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+                await playerData.LoadSklepcsData(steamId64, WebManager!);
+            }
+            catch (Exception ex)
+            {
+                Server.NextFrame(() => throw ex);
+            }
+
             Server.NextFrame(() =>
             {
                 playerData.AssignPermissions(player, PermissionManager!);

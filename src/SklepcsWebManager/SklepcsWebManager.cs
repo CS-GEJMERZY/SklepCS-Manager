@@ -151,12 +151,7 @@ public class SklepcsWebManager
 
     public ServicePlanData? GetService(int planID)
     {
-        if (planID < 0 || planID > Services.Count)
-        {
-            return null;
-        }
-
-        return Services[planID - 1];
+        return planID < 0 || planID > Services.Count ? null : Services[planID - 1];
     }
 
     public string GetDebugData()
