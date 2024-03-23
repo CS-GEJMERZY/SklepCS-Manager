@@ -32,7 +32,7 @@ namespace Plugin.Managers
                 throw new Exception("Database is null, but tried to query player data.");
             }
 
-            List<PlayerDatabaseData> playerDataList = new List<PlayerDatabaseData>();
+            List<PlayerDatabaseData> playerDataList = new();
 
             using (var command = new MySqlCommand())
             {
@@ -48,7 +48,7 @@ namespace Plugin.Managers
                     using var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
-                        PlayerDatabaseData playerData = new PlayerDatabaseData
+                        PlayerDatabaseData playerData = new()
                         {
                             AuthType = reader.GetString("authtype"),
                             Flags = reader.GetString("flags"),

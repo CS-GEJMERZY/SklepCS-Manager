@@ -12,5 +12,4 @@ namespace Plugin.Models
         public string PlanUniqueCode { get; set; } = "s31";
         public int PlanValue { get; set; } = 2300; // plan price * 100
     }
-
 }

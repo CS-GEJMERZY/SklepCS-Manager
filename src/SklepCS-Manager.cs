@@ -47,8 +47,6 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             Task.Run(async () =>
             {
                 bool webServices = await WebManager!.LoadWebServices();
-
-
                 bool settings = await WebManager!.LoadWebSettings();
 
                 Server.NextFrame(() =>
