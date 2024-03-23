@@ -10,7 +10,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 {
     public override string ModuleName => "SklepCS Manager Plugin";
     public override string ModuleAuthor => "Hacker";
-    public override string ModuleVersion => "1.2.0";
+    public override string ModuleVersion => "1.2.1(beta)";
     public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
     public required PluginConfig Config { get; set; }
@@ -91,31 +91,31 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
                     PlayerCache.Add(player, new Player());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
                     var steamId64 = player.AuthorizedSteamID.SteamId64;
-      
-                        Task.Run(async () =>
+
+                    Task.Run(async () =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
-                                await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
-                            }
-                            catch (Exception ex)
-                            {
-                                Server.NextFrame(() => throw ex);
-                            }
+                            await PlayerCache[player].LoadDatabaseData(steamId2, Config.Sklepcs.ServerTag, DatabaseManager!);
+                            await PlayerCache[player].LoadSklepcsData(steamId64, WebManager!);
+                        }
+                        catch (Exception ex)
+                        {
+                            Server.NextFrame(() => throw ex);
+                        }
 
-                            Server.NextFrame(() =>
-                            {
-                                PlayerCache[player].AssignPermissions(player, PermissionManager!);
-                            });
+                        Server.NextFrame(() =>
+                        {
+                            PlayerCache[player].AssignPermissions(player, PermissionManager!);
                         });
-                    }
-
-
+                    });
                 }
+
+
             }
         }
     }
+}
 
 
 }
