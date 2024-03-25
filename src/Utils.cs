@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace SklepCSManager;
+namespace Plugin;
 
 public partial class SklepcsManagerPlugin
 {
