@@ -6,7 +6,7 @@ This plugin integrates your CS2 server with SklepCS (https://sklepcs.pl/).
 * Purchase via SklepCS wallet or SMS
 
 **Dependencies**
-* CounterStrikeSharp v178
+* CounterStrikeSharp NET 8 v201
 * Metamod:Source
 
 **Installation**
