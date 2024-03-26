@@ -5,12 +5,11 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace Plugin;
 
-
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "SklepCS Manager Plugin";
     public override string ModuleAuthor => "Hacker";
-    public override string ModuleVersion => "1.2.1";
+    public override string ModuleVersion => "1.2.2";
     public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
     public required PluginConfig Config { get; set; }
