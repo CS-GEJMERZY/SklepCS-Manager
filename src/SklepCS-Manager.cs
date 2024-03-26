@@ -5,7 +5,6 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace Plugin;
 
-
 public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "SklepCS Manager Plugin";
