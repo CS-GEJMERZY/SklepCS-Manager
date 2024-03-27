@@ -6,8 +6,8 @@ namespace Plugin.Managers
 {
     public class DatabaseManager
     {
-        private string ConnectionsString = string.Empty;
-        private MySqlConnection Connection;
+        private readonly string ConnectionsString = string.Empty;
+        private readonly MySqlConnection Connection;
 
         public DatabaseManager(Configs.DatabaseData databaseConfig)
         {
@@ -32,7 +32,7 @@ namespace Plugin.Managers
                 throw new Exception("Database is null, but tried to query player data.");
             }
 
-            List<PlayerDatabaseData> playerDataList = new();
+            List<PlayerDatabaseData> playerDataList = [];
 
             using (var command = new MySqlCommand())
             {

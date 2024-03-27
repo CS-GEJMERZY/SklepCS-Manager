@@ -9,7 +9,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 {
     public override string ModuleName => "SklepCS Manager Plugin";
     public override string ModuleAuthor => "Hacker";
-    public override string ModuleVersion => "1.2.2";
+    public override string ModuleVersion => "1.2.3";
     public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
     public required PluginConfig Config { get; set; }
@@ -18,7 +18,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     internal Managers.PermissionManager? PermissionManager;
     internal Managers.SklepcsWebManager? WebManager;
 
-    internal Dictionary<CCSPlayerController, Managers.Player> PlayerCache = new();
+    internal Dictionary<CCSPlayerController, Managers.Player> PlayerCache = [];
 
     public string PluginChatPrefix { get; set; } = " DefaultPrefix";
 
@@ -45,40 +45,31 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
         {
             Task.Run(async () =>
             {
-                bool webServices = await WebManager!.LoadWebServices();
-                bool settings = await WebManager!.LoadWebSettings();
-
-                Server.NextFrame(() =>
+                try
                 {
-                    if (webServices)
+                    await WebManager!.LoadWebServices();
+                }
+                catch (Exception ex)
+                {
+                    if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
                     {
-                        Server.PrintToConsole("Web services loaded.");
+                        Logger.LogError(ex.ToString());
                     }
-                    else
-                    {
-                        if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
-                        {
-                            Logger.LogError($"Failed to load web services. DEBUG: {WebManager.GetDebugData()}");
-                        }
-                    }
+                }
 
-                    if (settings)
+                try
+                {
+                    await WebManager!.LoadWebSettings();
+                }
+                catch (Exception ex)
+                {
+                    if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
                     {
-                        Server.PrintToConsole("Web settings loaded.");
+                        Logger.LogError(ex.ToString());
                     }
-                    else
-                    {
-                        if (Config.Settings.IsLoggingLevelEnabled(Models.LoggingLevelData.WebApiErrors))
-                        {
-                            Logger.LogError($"Failed to load web settings. DEBUG: {WebManager.GetDebugData()}");
-                        }
-                    }
-                });
-
-
+                }
             });
         }
-
 
         if (hotReload)
         {
