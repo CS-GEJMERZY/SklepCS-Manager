@@ -18,12 +18,9 @@ public partial class SklepcsManagerPlugin
         }
     }
 
-    public List<string> GetLines(string message)
+    public static List<string> GetLines(string message)
     {
-        List<string> result = new();
-        string[] lines = message.Split('\n');
-
-        result = lines.ToList();
+        List<string> result = message.Split('\n').ToList();
 
         return result;
     }

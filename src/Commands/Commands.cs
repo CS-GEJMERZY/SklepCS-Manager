@@ -7,7 +7,7 @@ namespace Plugin
     {
         private void HandlePlayerCommand(CCSPlayerController? player, CommandInfo commandInfo, Action action)
         {
-            if (!Managers.Player.IsValid(player))
+            if (!Managers.PlayerManager.IsValid(player))
             {
                 player!.PrintToChat($"{PluginChatPrefix}{Localizer["player.invalid"]}");
                 return;

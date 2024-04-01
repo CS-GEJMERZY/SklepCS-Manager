@@ -9,6 +9,6 @@ namespace Plugin.Configs
 
 
         [JsonPropertyName("Permissions")]
-        public List<string> Permissions { get; set; } = new List<string> { "@sklepcs/default", "@sklepcs/2" };
+        public List<string> Permissions { get; set; } = ["@sklepcs/default", "@sklepcs/2"];
     }
 }

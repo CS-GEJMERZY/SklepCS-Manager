@@ -1,13 +1,11 @@
-﻿using System.Data;
-using MySqlConnector;
+﻿using MySqlConnector;
 using Plugin.Models;
 
 namespace Plugin.Managers
 {
     public class DatabaseManager
     {
-        private string ConnectionsString = string.Empty;
-        private MySqlConnection Connection;
+        private readonly string ConnectionsString = string.Empty;
 
         public DatabaseManager(Configs.DatabaseData databaseConfig)
         {
@@ -21,55 +19,40 @@ namespace Plugin.Managers
             };
 
             ConnectionsString = builder.ConnectionString;
-
-            Connection = new MySqlConnection(ConnectionsString);
         }
 
         public async Task<List<PlayerDatabaseData>> FetchPlayerData(string SteamId2, string serverTag)
         {
-            if (Connection == null)
+            List<PlayerDatabaseData> playerDataList = [];
+
+            try
             {
-                throw new Exception("Database is null, but tried to query player data.");
+                using var Connection = new MySqlConnection(ConnectionsString);
+                await Connection.OpenAsync();
+
+                using var command = new MySqlCommand();
+                string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{SteamId2}' AND (serwer = '{serverTag}' or serwer='all')";
+
+                command.CommandText = query;
+                command.Connection = Connection;
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    PlayerDatabaseData playerData = new()
+                    {
+                        AuthType = reader.GetString("authtype"),
+                        Flags = reader.GetString("flags"),
+                        Immunity = reader.GetInt32("immunity"),
+                        End = reader.GetDateTime("koniec")
+                    };
+
+                    playerDataList.Add(playerData);
+                }
             }
-
-            List<PlayerDatabaseData> playerDataList = new();
-
-            using (var command = new MySqlCommand())
+            catch (Exception ex)
             {
-                try
-                {
-                    await Connection.OpenAsync();
-
-                    string query = $"SELECT authtype, flags, immunity, serwer, koniec FROM sklepcs_vip WHERE identity = '{SteamId2}' AND (serwer = '{serverTag}' or serwer='all')";
-
-                    command.CommandText = query;
-                    command.Connection = Connection;
-
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        PlayerDatabaseData playerData = new()
-                        {
-                            AuthType = reader.GetString("authtype"),
-                            Flags = reader.GetString("flags"),
-                            Immunity = reader.GetInt32("immunity"),
-                            End = reader.GetDateTime("koniec")
-                        };
-
-                        playerDataList.Add(playerData);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Encountered error while reading player data from the database: {ex.Message}");
-                }
-                finally
-                {
-                    if (Connection.State == ConnectionState.Open)
-                    {
-                        await Connection.CloseAsync();
-                    }
-                }
+                throw new Exception($"Encountered error while reading player data from the database.", ex);
             }
 
             return playerDataList;

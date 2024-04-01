@@ -12,14 +12,14 @@ namespace Plugin
         [ConsoleCommand("css_sklepdebug", "Sklep debug")]
         public void OnDebugCommand(CCSPlayerController? player, CommandInfo commandInfo)
         {
-            if (player == null || !PlayerCache.ContainsKey(player))
+            if (player == null || !PlayerCache.TryGetValue(player, out Managers.PlayerManager? playerData))
             {
                 player!.PrintToChat($"{PluginChatPrefix}{Localizer["player.invalid"]}");
                 return;
             }
 
             player!.PrintToChat("Listing flags loaded from database: ");
-            foreach (var data in PlayerCache[player].ConnectionData)
+            foreach (var data in playerData.ConnectionData)
             {
                 player!.PrintToChat($"{data.Flags}");
             }
@@ -37,7 +37,7 @@ namespace Plugin
                 commandInfo.ReplyToCommand($"{data.RequiredFlags} | {perms}");
             }
 
-            var fetchedPermissions = PermissionManager!.FetchPermissions(PlayerCache[player].ConnectionData);
+            var fetchedPermissions = PermissionManager!.FetchPermissions(playerData.ConnectionData);
 
             player!.PrintToChat("Listing permissions that should be added: ");
             foreach (var permission in fetchedPermissions)
@@ -46,7 +46,7 @@ namespace Plugin
             }
 
             player!.PrintToChat("Listing added permissions: ");
-            foreach (var permission in PlayerCache[player].AddedPermissions)
+            foreach (var permission in playerData.AddedPermissions)
             {
                 player!.PrintToChat($"{permission} | {(AdminManager.PlayerHasPermissions(player, permission) ? "Has" : "Doesn't have")}");
             }
