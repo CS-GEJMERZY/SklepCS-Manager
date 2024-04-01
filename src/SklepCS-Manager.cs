@@ -9,7 +9,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 {
     public override string ModuleName => "SklepCS Manager Plugin";
     public override string ModuleAuthor => "Hacker";
-    public override string ModuleVersion => "1.2.3";
+    public override string ModuleVersion => "1.2.4";
     public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
     public required PluginConfig Config { get; set; }
@@ -18,7 +18,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
     internal Managers.PermissionManager? PermissionManager;
     internal Managers.SklepcsWebManager? WebManager;
 
-    internal Dictionary<CCSPlayerController, Managers.Player> PlayerCache = [];
+    internal Dictionary<CCSPlayerController, Managers.PlayerManager> PlayerCache = [];
 
     public string PluginChatPrefix { get; set; } = " DefaultPrefix";
 
@@ -77,7 +77,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
             {
                 if (player != null && player.IsValid && !player.IsBot && player.AuthorizedSteamID != null)
                 {
-                    PlayerCache.Add(player, new Managers.Player());
+                    PlayerCache.Add(player, new Managers.PlayerManager());
                     var steamId2 = player.AuthorizedSteamID.SteamId2;
                     var steamId64 = player.AuthorizedSteamID.SteamId64;
                     Task.Run(async () =>

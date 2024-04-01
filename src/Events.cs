@@ -16,9 +16,9 @@ public partial class SklepcsManagerPlugin
             return HookResult.Continue;
         }
 
-        if (!PlayerCache.TryGetValue(player, out Managers.Player? playerData))
+        if (!PlayerCache.TryGetValue(player, out Managers.PlayerManager? playerData))
         {
-            playerData = new Managers.Player(); PlayerCache.Add(player, playerData);
+            playerData = new Managers.PlayerManager(); PlayerCache.Add(player, playerData);
         }
 
         var steamId2 = player.AuthorizedSteamID.SteamId2;

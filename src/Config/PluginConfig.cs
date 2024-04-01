@@ -12,7 +12,7 @@ namespace Plugin
         public Configs.SklepcsData Sklepcs { get; set; } = new Configs.SklepcsData();
 
         [JsonPropertyName("Groups")]
-        public List<Configs.SklepcsPermissionData> PermissionGroups { get; set; } = new List<Configs.SklepcsPermissionData>();
+        public List<Configs.SklepcsPermissionData> PermissionGroups { get; set; } = [];
 
         public PluginConfig()
         {

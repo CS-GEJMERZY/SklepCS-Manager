@@ -17,7 +17,7 @@ namespace Plugin.Managers
         private int ApiVersion { get; set; } = 142;
         private string ApiUrl { get; set; } = "https://sklepcs.pl/";
         private string ServerId { get; set; } = "1";
-        public List<ServicePlanData> Services { get; set; } = new List<ServicePlanData>();
+        public List<ServicePlanData> Services { get; set; } = [];
 
         private bool _servicesLoaded = false;
         private bool _settingsLoaded = false;

@@ -13,8 +13,8 @@ namespace Plugin.Managers
 
         public List<string> FetchPermissions(List<PlayerDatabaseData> playerConnectionData)
         {
-            List<string> matchedPermissions = new();
-            HashSet<char> rawPlayerFlags = new();
+            List<string> matchedPermissions = [];
+            HashSet<char> rawPlayerFlags = [];
 
             foreach (PlayerDatabaseData connectionData in playerConnectionData)
             {

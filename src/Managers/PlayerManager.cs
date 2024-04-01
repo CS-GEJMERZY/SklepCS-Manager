@@ -4,26 +4,26 @@ using CounterStrikeSharp.API.Modules.Admin;
 
 namespace Plugin.Managers
 {
-    public class Player
+    public class PlayerManager
     {
         public List<Models.PlayerDatabaseData> ConnectionData { get; private set; }
         public List<string> AddedPermissions { get; private set; }
 
         private bool _loadedDatabaseData = false;
-        public bool _loadedSklepcsData { get; set; } = false;
+        public bool LoadedSklepcsData { get; set; } = false;
 
 
         public bool IsLoadedDatabase => _loadedDatabaseData;
-        public bool IsLoadedSklepcs => _loadedSklepcsData;
+        public bool IsLoadedSklepcs => LoadedSklepcsData;
 
-        public bool IsFullyLoaded => _loadedDatabaseData && _loadedSklepcsData;
+        public bool IsFullyLoaded => _loadedDatabaseData && LoadedSklepcsData;
 
         public double SklepcsMoney { get; set; } = 0;
 
-        public Player()
+        public PlayerManager()
         {
-            ConnectionData = new List<Models.PlayerDatabaseData>();
-            AddedPermissions = new List<string>();
+            ConnectionData = [];
+            AddedPermissions = [];
         }
 
         public static bool IsValid(CCSPlayerController? player)
@@ -34,24 +34,41 @@ namespace Plugin.Managers
 
         public async Task LoadDatabaseData(string SteamID2, string serverTag, DatabaseManager databaseManager)
         {
-            ConnectionData = await databaseManager.FetchPlayerData(SteamID2, serverTag);
+            try
+            {
+                ConnectionData = await databaseManager.FetchPlayerData(SteamID2, serverTag);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to load player datase data. ", ex);
+            }
             _loadedDatabaseData = true;
         }
 
         public async Task<bool> LoadSklepcsData(ulong SteamId64, SklepcsWebManager webManager)
         {
-            int money = await webManager.LoadPlayerMoney(SteamId64);
+
+            int money;
+            try
+            {
+
+                money = await webManager.LoadPlayerMoney(SteamId64);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             if (SklepcsMoney == -1)
             {
-                _loadedSklepcsData = false;
+                LoadedSklepcsData = false;
                 return false;
             }
 
             float moneyFloat = (float)money / 100;
             SklepcsMoney = Math.Round(moneyFloat, 2);
 
-            _loadedSklepcsData = true;
+            LoadedSklepcsData = true;
             return true;
         }
 
