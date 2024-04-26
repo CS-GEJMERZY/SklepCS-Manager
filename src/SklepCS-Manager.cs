@@ -9,7 +9,7 @@ public partial class SklepcsManagerPlugin : BasePlugin, IPluginConfig<PluginConf
 {
     public override string ModuleName => "SklepCS Manager Plugin";
     public override string ModuleAuthor => "Hacker";
-    public override string ModuleVersion => "1.2.4";
+    public override string ModuleVersion => "1.2.5";
     public override string ModuleDescription => "https://github.com/CS-GEJMERZY/SklepCS-Manager";
 
     public required PluginConfig Config { get; set; }
